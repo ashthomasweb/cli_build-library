@@ -1,0 +1,19 @@
+{
+  "name": "@ashthomascode/initial-test",
+  "version": "1.0.0",
+  "description": "Initial CLI test app",
+  "main": "index.js",
+  "scripts": {
+    "test": "test"
+  },
+  "bin": {
+    "hal": "index.js"
+  },
+  "author": "Ashley Thomas",
+  "license": "ISC",
+  "dependencies": {
+    "commander": "^11.1.0",
+    "fs": "^0.0.1-security",
+    "inquirer": "^8.0.0"
+  }
+}
