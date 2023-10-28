@@ -10,7 +10,7 @@ import {
     /* Icons */
 } from './export-hub'
 
-const !!NAME!! = (props) => {
+const Hooray.js = (props) => {
     const {
         state: { display },
         dispatch,
@@ -28,4 +28,4 @@ const !!NAME!! = (props) => {
     )
 }
 
-export default !!NAME!!
+export default Hooray.js
