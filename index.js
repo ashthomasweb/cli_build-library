@@ -194,8 +194,8 @@ inquirer.prompt(questions).then(answers => {
         inquirer.prompt(srcDirPrompt).then(answers => {
             if (answers.src_directory === 'Yes') {
                 inquirer.prompt(whatFilenamePrompt).then(answers => {
-                    console.log(relativeDirectory)
-                    writeFile(`${relativeDirectory}/${answers.what_filename}.txt`, 'Hello, World!', (err) => {
+                    console.log(userRootDirectory)
+                    writeFile(`${userRootDirectory}/${answers.what_filename}.txt`, 'Hello, World!', (err) => {
                         if (err) {
                             console.error('Error creating the file:', err)
                         } else {
@@ -254,14 +254,10 @@ inquirer.prompt(questions).then(answers => {
     } else if (answers.create_pick === 'Set /src folder') {
         inquirer.prompt(srcFolderPrompt).then(answers => {
             const data = readFileSync(`${halRootDirectory}/config.js`, 'utf8')
-            console.log(data)
-            console.log(userRootDirectory)
             const userVarReplace = `export const userRootDirectory = '${userRootDirectory}'`
             const varPrefix = 'export const userRootDirectory ='
             const regex = new RegExp(userVarReplace, 'g')
-            const newContent = data.replace(regex, `${varPrefix} ${answers.src_folder}`).toString()
-            console.log(answers.src_folder)
-            console.log(newContent)
+            const newContent = data.replace(regex, `${varPrefix} '${answers.src_folder}'`).toString()
             writeFile(`${halRootDirectory}/config.js`, newContent, (err) => { // TODO: capture file type
                 if (err) {
                     console.error('Error writing to file:', err)
