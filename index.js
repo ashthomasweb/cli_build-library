@@ -1,6 +1,6 @@
 #! /usr/bin/env node
-import { relativeDirectory, componentDirectory } from '../initial-test/config.js'
-import { program } from 'commander'
+import { relativeDirectory, componentDirectory, halRootDirectory, userRootDirectory } from '../initial-test/config.js'
+// import { program } from 'commander'
 import inquirer from 'inquirer'
 import { promises, writeFile, stat, mkdir, readFileSync } from 'fs'
 
@@ -238,25 +238,11 @@ inquirer.prompt(questions).then(answers => {
                     if (answers.rename === 'Yes') {
                         inquirer.prompt(whatComponentNamePrompt).then(answers => {
                             const newContent = data.replace(/!!NAME!!/g, answers.what_compname).toString()
-                            // fs.writeFile(selectedFilePath, newContent, (err) => {
-                            //     if (err) {
-                            //         console.error('Error writing to file:', err)
-                            //     } else {
-                            //         console.log('File content changed successfully.')
-                            //     }
-                            // })
                             nav(newContent, answers.what_compname)
                         })
                     } else if (answers.rename === 'No') { // TODO: Don't know if this is relevant - should there be a default option and how?
                         inquirer.prompt(whatComponentNamePrompt).then(answers => {
                             const newContent = data.replace(/!!NAME!!/g, answers.what_compname)
-                            // fs.writeFile(selectedFilePath, newContent, (err) => {
-                            //     if (err) {
-                            //         console.error('Error writing to file:', err)
-                            //     } else {
-                            //         console.log('File content changed successfully.')
-                            //     }
-                            // })
                             nav(newContent, answers.what_compname)
                         })
                     }
@@ -267,7 +253,23 @@ inquirer.prompt(questions).then(answers => {
         })
     } else if (answers.create_pick === 'Set /src folder') {
         inquirer.prompt(srcFolderPrompt).then(answers => {
-            relativeDirectory = answers.src_folder
+            const data = readFileSync(`${halRootDirectory}/config.js`, 'utf8')
+            console.log(data)
+            console.log(userRootDirectory)
+            const userVarReplace = `export const userRootDirectory = '${userRootDirectory}'`
+            const varPrefix = 'export const userRootDirectory ='
+            const regex = new RegExp(userVarReplace, 'g')
+            const newContent = data.replace(regex, `${varPrefix} ${answers.src_folder}`).toString()
+            console.log(answers.src_folder)
+            console.log(newContent)
+            writeFile(`${halRootDirectory}/config.js`, newContent, (err) => { // TODO: capture file type
+                if (err) {
+                    console.error('Error writing to file:', err)
+                } else {
+                    console.log(newContent)
+                    console.log('File content changed successfully.')
+                }
+            })
         })
 
     } else if (answers.create_pick === 'Navigate From /src/') {
