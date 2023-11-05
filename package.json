@@ -1,8 +1,9 @@
 {
-  "name": "@ashthomascode/initial-test",
+  "name": "@ashthomascode/hal",
   "version": "1.0.0",
   "description": "Initial CLI test app",
   "main": "index.js",
+  "type": "module",
   "scripts": {
     "test": "test"
   },
@@ -14,6 +15,6 @@
   "dependencies": {
     "commander": "^11.1.0",
     "fs": "^0.0.1-security",
-    "inquirer": "^8.0.0"
+    "inquirer": "^9.2.11"
   }
 }

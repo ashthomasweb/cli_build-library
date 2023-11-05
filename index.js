@@ -1,7 +1,9 @@
 #! /usr/bin/env node
-const { program } = require('commander')
-const inquirer = require('inquirer')
-const fs = require('fs')
+import { relativeDirectory, componentDirectory } from '../initial-test/config.js'
+import { program } from 'commander'
+import inquirer from 'inquirer'
+import { promises, writeFile, stat, mkdir, readFileSync } from 'fs'
+
 
 // program
 //     .version('1.0.0')
@@ -39,13 +41,13 @@ const fs = require('fs')
 // promptUser()
 
 
-const relativeDirectory = `c:/Users/rideo/Dropbox/Code/projects/cli/initial-test`
-const componentDirectory = `${relativeDirectory}/library/components`
+// let relativeDirectory = `c:/Users/rideo/Dropbox/Code/projects/cli/initial-test`
+// const componentDirectory = `${relativeDirectory}/library/components`
 
 // Function to generate dynamic choices from files in a directory
 async function gatherDynamicFolderContents(inputDirectory) {
     try {
-        const files = await fs.promises.readdir(inputDirectory)
+        const files = await promises.readdir(inputDirectory)
         return ['Back', 'Cancel', 'Place Here', ...files]
     } catch (error) {
         console.error('Error reading directory:', error)
@@ -59,7 +61,7 @@ const questions = [{
     type: 'list',
     name: 'create_pick',
     message: 'Create or Pick a file?',
-    choices: ['Create New', 'Pick Existing', 'Navigate From /src/']
+    choices: ['Create New', 'Pick Existing', 'Navigate From /src/', 'Set /src folder']
 }]
 
 const srcDirPrompt = [{
@@ -109,12 +111,11 @@ const rootFolderPrompt = [{
 }]
 
 
-// const Prompt = [{
-//     type: 'list',
-//     name: '',
-//     message: '',
-//     choices:
-// }]
+const srcFolderPrompt = [{
+    type: 'input',
+    name: 'src_folder',
+    message: 'Type path of your /src folder',
+}]
 
 
 // const Prompt = [{
@@ -158,7 +159,7 @@ function nav(newContent, compName) {
         } else if (answers.root_contents === 'Cancel') {
             console.log('Goodbye!')
         } else if (answers.root_contents === 'Place Here') {
-            fs.writeFile(`${pathArray.join('/')}/${compName}.js`, newContent, (err) => { // TODO: capture file type
+            writeFile(`${pathArray.join('/')}/${compName}.js`, newContent, (err) => { // TODO: capture file type
                 if (err) {
                     console.error('Error writing to file:', err)
                 } else {
@@ -166,7 +167,7 @@ function nav(newContent, compName) {
                 }
             })
         } else {
-            fs.stat(pathArray.join('/'), (err, stats) => {
+            stat(pathArray.join('/'), (err, stats) => {
                 if (err) {
                     console.error('Error getting file/folder information:', err)
                 } else {
@@ -193,7 +194,8 @@ inquirer.prompt(questions).then(answers => {
         inquirer.prompt(srcDirPrompt).then(answers => {
             if (answers.src_directory === 'Yes') {
                 inquirer.prompt(whatFilenamePrompt).then(answers => {
-                    fs.writeFile(`${relativeDirectory}/${answers.what_filename}.txt`, 'Hello, World!', (err) => {
+                    console.log(relativeDirectory)
+                    writeFile(`${relativeDirectory}/${answers.what_filename}.txt`, 'Hello, World!', (err) => {
                         if (err) {
                             console.error('Error creating the file:', err)
                         } else {
@@ -207,12 +209,12 @@ inquirer.prompt(questions).then(answers => {
                 inquirer.prompt(whatDirPrompt).then(answers => {
                     const what_dir = answers.what_dir
                     inquirer.prompt(whatFilenamePrompt).then(answers => {
-                        fs.mkdir(`${relativeDirectory}/${what_dir}`, { recursive: true }, (err) => {
+                        mkdir(`${relativeDirectory}/${what_dir}`, { recursive: true }, (err) => {
                             if (err) {
                                 console.error('Error creating directory:', err)
                             } else {
                                 console.log('Directory created successfully!')
-                                fs.writeFile(`${relativeDirectory}/${what_dir}/${answers.what_filename}`, `console.log('Hello, World!')`, (err) => {
+                                writeFile(`${relativeDirectory}/${what_dir}/${answers.what_filename}`, `console.log('Hello, World!')`, (err) => {
                                     if (err) {
                                         console.error('Error creating the file:', err)
                                     } else {
@@ -231,7 +233,7 @@ inquirer.prompt(questions).then(answers => {
         inquirer.prompt(selectFilePrompt).then(answers => {
             const selectedFilePath = `${componentDirectory}/${answers.selectedFile}`
             try {
-                const data = fs.readFileSync(selectedFilePath, 'utf8')
+                const data = readFileSync(selectedFilePath, 'utf8')
                 inquirer.prompt(renameFilePrompt).then(answers => {
                     if (answers.rename === 'Yes') {
                         inquirer.prompt(whatComponentNamePrompt).then(answers => {
@@ -263,6 +265,11 @@ inquirer.prompt(questions).then(answers => {
                 console.error('Error reading file:', err)
             }
         })
+    } else if (answers.create_pick === 'Set /src folder') {
+        inquirer.prompt(srcFolderPrompt).then(answers => {
+            relativeDirectory = answers.src_folder
+        })
+
     } else if (answers.create_pick === 'Navigate From /src/') {
         nav()
     }
