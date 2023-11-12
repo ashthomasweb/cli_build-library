@@ -1,10 +1,10 @@
 import {
-    relativeDirectory,
+    relativeDirectoryArray,
     componentDirectory,
-} from '../initial-test/config.js'
+} from './config.mjs'
 import { gatherDynamicFolderContents } from './utilities.mjs'
-import { pathArray } from './index.js'
-import { mainMenuChoices as mmc } from '../initial-test/config.js'
+import { pathArray } from './nav.mjs'
+import { mainMenuChoices as mmc } from './config.mjs'
 
 export const mainMenuPrompt = [{
     type: 'list',
@@ -62,7 +62,7 @@ export const rootFolderPrompt = [{
     type: 'list',
     name: 'root_contents',
     message: 'Navigation',
-    choices: () => gatherDynamicFolderContents(relativeDirectory)
+    choices: () => gatherDynamicFolderContents(relativeDirectoryArray.join('/'))
 }]
 
 export const srcFolderPrompt = [{

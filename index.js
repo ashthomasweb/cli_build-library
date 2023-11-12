@@ -1,56 +1,22 @@
 #! /usr/bin/env node
 import {
-    relativeDirectory,
+    relativeDirectoryArray,
     componentDirectory,
     halRootDirectory,
     userRootDirectory,
-} from '../initial-test/config.js'
+} from './config.mjs'
 import inquirer from 'inquirer'
-import { writeFile, stat, mkdir, readFileSync } from 'fs'
 import * as p from './prompts.js'
+import { mainMenuChoices as mmc } from './config.mjs'
+import { nav } from './nav.mjs'
+import { writeFile, stat, mkdir, readFileSync } from 'fs'
 import { removeANSICodes } from './styles.mjs'
-import { mainMenuChoices as mmc } from '../initial-test/config.js'
 
 
-export var pathArray = [relativeDirectory]
 
-function nav(newContent, compName) {
-
-    inquirer.prompt(p.dynamicFolderPrompt).then((answers) => {
-        if (removeANSICodes(answers.root_contents) === 'Back') {
-            pathArray = pathArray.slice(0, -1)
-            nav()
-        } else if (removeANSICodes(answers.root_contents) === 'Cancel') {
-            console.log('Goodbye!')
-        } else if (removeANSICodes(answers.root_contents) === 'Place Here') {
-            writeFile(`${pathArray.join('/')}/${compName}.js`, newContent, (err) => { // TODO: capture file type
-                if (err) {
-                    console.error('Error writing to file:', err)
-                } else {
-                    console.log('File content changed successfully.')
-                }
-            })
-        } else {
-            stat(pathArray.join('/'), (err, stats) => {
-                if (err) {
-                    console.error('Error getting file/folder information:', err)
-                } else {
-                    if (stats.isFile()) {
-                        pathArray.push(removeANSICodes(answers.root_contents))
-                        nav(newContent, compName)
-                    } else if (stats.isDirectory()) {
-                        pathArray.push(removeANSICodes(answers.root_contents))
-                        nav(newContent, compName)
-                    } else {
-                        console.log('The selection is neither a file nor a folder.')
-                    }
-                }
-            })
-        }
-    })
-}
 
 inquirer.prompt(p.mainMenuPrompt).then(answers => {
+
     if (answers.main_menu === mmc.createNew.text) {
         inquirer.prompt(p.srcDirPrompt).then(answers => {
             if (answers.src_directory === 'Yes') {
@@ -69,12 +35,12 @@ inquirer.prompt(p.mainMenuPrompt).then(answers => {
                 inquirer.prompt(p.whatDirPrompt).then(answers => {
                     const what_dir = answers.what_dir
                     inquirer.prompt(p.whatFilenamePrompt).then(answers => {
-                        mkdir(`${relativeDirectory}/${what_dir}`, { recursive: true }, (err) => {
+                        mkdir(`${relativeDirectoryArray.join('/')}/${what_dir}`, { recursive: true }, (err) => {
                             if (err) {
                                 console.error('Error creating directory:', err)
                             } else {
                                 console.log('Directory created successfully!')
-                                writeFile(`${relativeDirectory}/${what_dir}/${answers.what_filename}`, `console.log('Hello, World!')`, (err) => {
+                                writeFile(`${relativeDirectoryArray.join('/')}/${what_dir}/${answers.what_filename}`, `console.log('Hello, World!')`, (err) => {
                                     if (err) {
                                         console.error('Error creating the file:', err)
                                     } else {
@@ -91,7 +57,7 @@ inquirer.prompt(p.mainMenuPrompt).then(answers => {
         })
     } else if (answers.main_menu === mmc.copyFrom.text) {
         inquirer.prompt(p.selectFilePrompt).then(answers => {
-            const selectedFilePath = `${componentDirectory}/${answers.selectedFile}`
+            const selectedFilePath = `${componentDirectory}/${removeANSICodes(answers.selectedFile)}`
             try {
                 const data = readFileSync(selectedFilePath, 'utf8')
                 inquirer.prompt(p.renameFilePrompt).then(answers => {
