@@ -2,14 +2,21 @@ import {
     relativeDirectory,
     componentDirectory,
 } from '../initial-test/config.js'
-import { gatherDynamicFolderContents } from './utilities.js'
+import { gatherDynamicFolderContents } from './utilities.mjs'
 import { pathArray } from './index.js'
+import { mainMenuChoices as mmc } from '../initial-test/config.js'
 
-export const initialPrompt = [{
+export const mainMenuPrompt = [{
     type: 'list',
-    name: 'initial_options',
-    message: 'Welcome! Here are your basic options:',
-    choices: ['Create new file or folder', 'Pick from existing component library', 'Navigate project from /src/', 'User Settings']
+    name: 'main_menu',
+    message: 'Welcome! What would you like to do?',
+    choices: [
+        mmc.copyFrom.text,
+        mmc.explore.text,
+        mmc.createNew.text,
+        mmc.help.text,
+        mmc.settings.text
+    ]
 }]
 
 export const srcDirPrompt = [{
@@ -68,7 +75,7 @@ export const settingsPrompt = [{
     type: 'list',
     name: 'settings',
     message: 'User configurable settings',
-    choices: ['Set /src folder']
+    choices: ['Set /src folder', 'Reset /src folder']
 }]
 
 
@@ -76,7 +83,8 @@ export const dynamicFolderPrompt = [{
     type: 'list',
     name: 'root_contents',
     message: 'Navigation',
-    choices: () => gatherDynamicFolderContents(pathArray.join('/'))
+    choices: () => gatherDynamicFolderContents(pathArray.join('/')),
+    pageSize: 25
 }]
 
 // const Prompt = [{

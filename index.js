@@ -8,18 +8,21 @@ import {
 import inquirer from 'inquirer'
 import { writeFile, stat, mkdir, readFileSync } from 'fs'
 import * as p from './prompts.js'
+import { removeANSICodes } from './styles.mjs'
+import { mainMenuChoices as mmc } from '../initial-test/config.js'
+
 
 export var pathArray = [relativeDirectory]
 
 function nav(newContent, compName) {
 
     inquirer.prompt(p.dynamicFolderPrompt).then((answers) => {
-        if (answers.root_contents === 'Back') {
+        if (removeANSICodes(answers.root_contents) === 'Back') {
             pathArray = pathArray.slice(0, -1)
             nav()
-        } else if (answers.root_contents === 'Cancel') {
+        } else if (removeANSICodes(answers.root_contents) === 'Cancel') {
             console.log('Goodbye!')
-        } else if (answers.root_contents === 'Place Here') {
+        } else if (removeANSICodes(answers.root_contents) === 'Place Here') {
             writeFile(`${pathArray.join('/')}/${compName}.js`, newContent, (err) => { // TODO: capture file type
                 if (err) {
                     console.error('Error writing to file:', err)
@@ -33,10 +36,10 @@ function nav(newContent, compName) {
                     console.error('Error getting file/folder information:', err)
                 } else {
                     if (stats.isFile()) {
-                        pathArray.push(answers.root_contents)
+                        pathArray.push(removeANSICodes(answers.root_contents))
                         nav(newContent, compName)
                     } else if (stats.isDirectory()) {
-                        pathArray.push(answers.root_contents)
+                        pathArray.push(removeANSICodes(answers.root_contents))
                         nav(newContent, compName)
                     } else {
                         console.log('The selection is neither a file nor a folder.')
@@ -47,9 +50,8 @@ function nav(newContent, compName) {
     })
 }
 
-
-inquirer.prompt(p.initialPrompt).then(answers => {
-    if (answers.initial_options === 'Create new file or folder') {
+inquirer.prompt(p.mainMenuPrompt).then(answers => {
+    if (answers.main_menu === mmc.createNew.text) {
         inquirer.prompt(p.srcDirPrompt).then(answers => {
             if (answers.src_directory === 'Yes') {
                 inquirer.prompt(p.whatFilenamePrompt).then(answers => {
@@ -87,7 +89,7 @@ inquirer.prompt(p.initialPrompt).then(answers => {
                 })
             }
         })
-    } else if (answers.initial_options === 'Pick from existing component library') {
+    } else if (answers.main_menu === mmc.copyFrom.text) {
         inquirer.prompt(p.selectFilePrompt).then(answers => {
             const selectedFilePath = `${componentDirectory}/${answers.selectedFile}`
             try {
@@ -109,7 +111,7 @@ inquirer.prompt(p.initialPrompt).then(answers => {
                 console.error('Error reading file:', err)
             }
         })
-    } else if (answers.initial_options === 'User Settings') {
+    } else if (answers.main_menu === mmc.settings.text) {
         inquirer.prompt(p.settingsPrompt).then(answers => {
 
             if (answers.settings === 'Set /src folder') {
@@ -128,66 +130,17 @@ inquirer.prompt(p.initialPrompt).then(answers => {
                         }
                     })
                 })
+            } else if (answers.settings === 'Reset /src folder') {
+                console.log('Feature Coming Soon!')
             }
 
         })
 
-    } else if (answers.initial_options === 'Navigate project from /src/') {
+    } else if (answers.main_menu === mmc.explore.text) {
         nav()
+    } else if (answers.main_menu === mmc.help.text) {
+        console.log('Help docs coming soon!')
     }
 }).catch(error => {
     console.error('Error occurred:', error)
 })
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// program
-//     .version('1.0.0')
-//     .description('A simple CLI for npm')
-//     .option('-g, --greet <name>', 'Greet someone')
-//     .option('-n, --name <name>', 'Your name')
-//     .option('-f, --force', 'Force is active')
-//     .parse(process.argv)
-
-// async function promptUser() {
-//     if (program.force) {
-//         console.log('Force is enabled')
-//     }
-
-//     // if (program.greet) {
-//     //     console.log(`Hello, ${name}!`)
-//     // } else {
-//     //     console.log('Hello, World!')
-//     // }
-
-//     if (!program.name) {
-//         const answers = await inquirer.prompt([
-//           {
-//             type: 'input',
-//             name: 'name',
-//             message: 'What is your name?'
-//           }
-//         ])
-//         program.name = answers.name
-//       }
-
-//       console.log(`Hello, ${program.name}!`)
-// }
-
-// promptUser()
-
