@@ -11,23 +11,19 @@ import { mainMenuChoices as mmc } from './config.mjs'
 import { nav } from './nav.mjs'
 import { writeFile, stat, mkdir, readFileSync } from 'fs'
 import { removeANSICodes } from './styles.mjs'
+import { fsWriteFile } from "./utilities.mjs"
+import { settingsCommands, allCommands } from "./config.mjs"
 
 
 
 
 inquirer.prompt(p.mainMenuPrompt).then(answers => {
 
-    if (answers.main_menu === mmc.createNew.text) {
+    if (answers.main_menu === mmc.createNew) {
         inquirer.prompt(p.srcDirPrompt).then(answers => {
             if (answers.src_directory === 'Yes') {
                 inquirer.prompt(p.whatFilenamePrompt).then(answers => {
-                    writeFile(`${userRootDirectory}/${answers.what_filename}.txt`, 'Hello, World!', (err) => {
-                        if (err) {
-                            console.error('Error creating the file:', err)
-                        } else {
-                            console.log('File created successfully!')
-                        }
-                    })
+                    fsWriteFile(`${userRootDirectory}/${answers.what_filename}.txt`, 'Hello, World!')
                 }).catch(error => {
                     console.error('Error occurred:', error)
                 })
@@ -40,13 +36,7 @@ inquirer.prompt(p.mainMenuPrompt).then(answers => {
                                 console.error('Error creating directory:', err)
                             } else {
                                 console.log('Directory created successfully!')
-                                writeFile(`${relativeDirectoryArray.join('/')}/${what_dir}/${answers.what_filename}`, `console.log('Hello, World!')`, (err) => {
-                                    if (err) {
-                                        console.error('Error creating the file:', err)
-                                    } else {
-                                        console.log('File created successfully!')
-                                    }
-                                })
+                                writeFile(`${relativeDirectoryArray.join('/')}/${what_dir}/${answers.what_filename}`, `console.log('Hello, World!')`)
                             }
                         })
                     })
@@ -55,7 +45,7 @@ inquirer.prompt(p.mainMenuPrompt).then(answers => {
                 })
             }
         })
-    } else if (answers.main_menu === mmc.copyFrom.text) {
+    } else if (answers.main_menu === mmc.copyFrom) {
         inquirer.prompt(p.selectFilePrompt).then(answers => {
             const selectedFilePath = `${componentDirectory}/${removeANSICodes(answers.selectedFile)}`
             try {
@@ -77,34 +67,21 @@ inquirer.prompt(p.mainMenuPrompt).then(answers => {
                 console.error('Error reading file:', err)
             }
         })
-    } else if (answers.main_menu === mmc.settings.text) {
+    } else if (answers.main_menu === mmc.settings) {
         inquirer.prompt(p.settingsPrompt).then(answers => {
 
             if (answers.settings === 'Set /src folder') {
-
-                inquirer.prompt(p.srcFolderPrompt).then(answers => {
-                    const data = readFileSync(`${halRootDirectory}/config.js`, 'utf8')
-                    const userVarReplace = `export const userRootDirectory = '${userRootDirectory}'`
-                    const varPrefix = 'export const userRootDirectory ='
-                    const regex = new RegExp(userVarReplace, 'g')
-                    const newContent = data.replace(regex, `${varPrefix} '${answers.src_folder}'`).toString()
-                    writeFile(`${halRootDirectory}/config.js`, newContent, (err) => { // TODO: capture file type
-                        if (err) {
-                            console.error('Error writing to file:', err)
-                        } else {
-                            console.log('File content changed successfully.')
-                        }
-                    })
-                })
+                nav(settingsCommands)
+               
             } else if (answers.settings === 'Reset /src folder') {
                 console.log('Feature Coming Soon!')
             }
 
         })
 
-    } else if (answers.main_menu === mmc.explore.text) {
+    } else if (answers.main_menu === mmc.explore) {
         nav()
-    } else if (answers.main_menu === mmc.help.text) {
+    } else if (answers.main_menu === mmc.help) {
         console.log('Help docs coming soon!')
     }
 }).catch(error => {

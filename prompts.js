@@ -1,6 +1,7 @@
 import {
     relativeDirectoryArray,
     componentDirectory,
+    allCommands,
 } from './config.mjs'
 import { gatherDynamicFolderContents } from './utilities.mjs'
 import { pathArray } from './nav.mjs'
@@ -11,11 +12,11 @@ export const mainMenuPrompt = [{
     name: 'main_menu',
     message: 'Welcome! What would you like to do?',
     choices: [
-        mmc.copyFrom.text,
-        mmc.explore.text,
-        mmc.createNew.text,
-        mmc.help.text,
-        mmc.settings.text
+        mmc.copyFrom,
+        mmc.explore,
+        mmc.createNew,
+        mmc.help,
+        mmc.settings
     ]
 }]
 
@@ -79,13 +80,24 @@ export const settingsPrompt = [{
 }]
 
 
-export const dynamicFolderPrompt = [{
-    type: 'list',
-    name: 'root_contents',
-    message: 'Navigation',
-    choices: () => gatherDynamicFolderContents(pathArray.join('/')),
-    pageSize: 25
-}]
+// export const dynamicFolderPrompt = [{
+//     type: 'list',
+//     name: 'root_contents',
+//     message: 'Navigation',
+//     choices: () => gatherDynamicFolderContents(pathArray.join('/')),
+//     pageSize: 25
+// }]
+
+export function generateDynamicPrompt(commandArray = allCommands) {
+    const dynamicFolderPrompt = [{
+        type: 'list',
+        name: 'root_contents',
+        message: 'Navigation',
+        choices: () => gatherDynamicFolderContents(pathArray.join('/'), commandArray),
+        pageSize: 25
+    }]
+    return dynamicFolderPrompt
+}
 
 // const Prompt = [{
 //     type: 'list',

@@ -4,21 +4,13 @@ export const componentDirectory = `${relativeDirectoryArray.join('/')}/library/c
 export const halRootDirectory = 'c:/Users/rideo/Dropbox/Code/projects/cli/initial-test'
 export const userRootDirectory = 'c:/Users/rideo/Dropbox/Code/projects/cli/hal-test'
 
-
 export const mainMenuChoices = {
-    copyFrom: {
-        text: `${styled('Copy', 'yellow')} From Reuseable Component Library`
-    },
-    explore: {
-        text: `${styled('Explore', 'yellow')} Project From /src/`
-    },
-    createNew: {
-        text: `${styled('Create', 'yellow')} New Blank File or Folder`
-    },
-    help: {
-        text: `Display Help Docs`
-    },
-    settings: {
-        text: `User Settings` 
-    }   
+    copyFrom: `${styled('Copy', 'yellow')} From Reuseable Component Library`,
+    explore: `${styled('Explore', 'yellow')} Starting From /src/`,
+    createNew: `${styled('Create', 'yellow')} New Blank File or Folder`,
+    help: `Display Help Docs`,
+    settings: `User Settings`   
 }
+
+export const allCommands = ['Back', 'Cancel', 'Place Here']
+export const settingsCommands = ['Back', 'Cancel', 'Set /src Here']
