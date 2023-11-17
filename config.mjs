@@ -12,5 +12,7 @@ export const mainMenuChoices = {
     settings: `User Settings`   
 }
 
-export const allCommands = ['Back', 'Cancel', 'Place Here']
-export const settingsCommands = ['Back', 'Cancel', 'Set /src Here']
+const standardCommands = ['Back', 'Cancel']
+export const defaultCommands = [...standardCommands, 'Place Here']
+export const settingsCommands = [...standardCommands, 'Set /src Here']
+export const newFileCommands = [...standardCommands, 'New File In Current Directory', 'Create New Folder In Current Directory']

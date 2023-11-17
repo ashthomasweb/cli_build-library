@@ -49,4 +49,3 @@ export function removeANSICodes(input) {
     const ansiRegex = /\x1b\[[0-9;]*m/g;
     return input.replace(ansiRegex, '');
 }
-

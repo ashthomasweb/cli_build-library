@@ -2,20 +2,16 @@
 import {
     relativeDirectoryArray,
     componentDirectory,
-    halRootDirectory,
     userRootDirectory,
 } from './config.mjs'
 import inquirer from 'inquirer'
 import * as p from './prompts.js'
 import { mainMenuChoices as mmc } from './config.mjs'
 import { nav } from './nav.mjs'
-import { writeFile, stat, mkdir, readFileSync } from 'fs'
+import { writeFile, mkdir, readFileSync } from 'fs'
 import { removeANSICodes } from './styles.mjs'
 import { fsWriteFile } from "./utilities.mjs"
-import { settingsCommands, allCommands } from "./config.mjs"
-
-
-
+import { settingsCommands, newFileCommands } from "./config.mjs"
 
 inquirer.prompt(p.mainMenuPrompt).then(answers => {
 
@@ -28,21 +24,7 @@ inquirer.prompt(p.mainMenuPrompt).then(answers => {
                     console.error('Error occurred:', error)
                 })
             } else {
-                inquirer.prompt(p.whatDirPrompt).then(answers => {
-                    const what_dir = answers.what_dir
-                    inquirer.prompt(p.whatFilenamePrompt).then(answers => {
-                        mkdir(`${relativeDirectoryArray.join('/')}/${what_dir}`, { recursive: true }, (err) => {
-                            if (err) {
-                                console.error('Error creating directory:', err)
-                            } else {
-                                console.log('Directory created successfully!')
-                                writeFile(`${relativeDirectoryArray.join('/')}/${what_dir}/${answers.what_filename}`, `console.log('Hello, World!')`)
-                            }
-                        })
-                    })
-                }).catch(error => {
-                    console.error('Error occurred in what_dir block:', error)
-                })
+                nav(newFileCommands)
             }
         })
     } else if (answers.main_menu === mmc.copyFrom) {

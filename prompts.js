@@ -1,7 +1,6 @@
 import {
-    relativeDirectoryArray,
     componentDirectory,
-    allCommands,
+    defaultCommands,
 } from './config.mjs'
 import { gatherDynamicFolderContents } from './utilities.mjs'
 import { pathArray } from './nav.mjs'
@@ -30,7 +29,7 @@ export const srcDirPrompt = [{
 export const whatDirPrompt = [{
     type: 'input',
     name: 'what_dir',
-    message: 'Where then?',
+    message: 'Whats the new folder name?',
 }]
 
 export const whatFilenamePrompt = [{
@@ -59,13 +58,6 @@ export const selectFilePrompt = [{
     choices: () => gatherDynamicFolderContents(componentDirectory)
 }]
 
-export const rootFolderPrompt = [{
-    type: 'list',
-    name: 'root_contents',
-    message: 'Navigation',
-    choices: () => gatherDynamicFolderContents(relativeDirectoryArray.join('/'))
-}]
-
 export const srcFolderPrompt = [{
     type: 'input',
     name: 'src_folder',
@@ -79,16 +71,7 @@ export const settingsPrompt = [{
     choices: ['Set /src folder', 'Reset /src folder']
 }]
 
-
-// export const dynamicFolderPrompt = [{
-//     type: 'list',
-//     name: 'root_contents',
-//     message: 'Navigation',
-//     choices: () => gatherDynamicFolderContents(pathArray.join('/')),
-//     pageSize: 25
-// }]
-
-export function generateDynamicPrompt(commandArray = allCommands) {
+export function generateDynamicPrompt(commandArray = defaultCommands) {
     const dynamicFolderPrompt = [{
         type: 'list',
         name: 'root_contents',
@@ -98,18 +81,3 @@ export function generateDynamicPrompt(commandArray = allCommands) {
     }]
     return dynamicFolderPrompt
 }
-
-// const Prompt = [{
-//     type: 'list',
-//     name: '',
-//     message: '',
-//     choices:
-// }]
-
-
-// const Prompt = [{
-//     type: 'list',
-//     name: '',
-//     message: '',
-//     choices:
-// }]

@@ -10,7 +10,6 @@ function colorizeString(input, isDirectory) {
     return isDirectory ? styled(styled(`${input}`, 'bold'), 'cyan') : styled(input, 'green')
 }
 
-
 export async function gatherDynamicFolderContents(inputDirectory, commandOptions) {
     try {
         const files = await promises.readdir(inputDirectory)
@@ -22,7 +21,6 @@ export async function gatherDynamicFolderContents(inputDirectory, commandOptions
                 const styledEntry = colorizeString(entry, isDirectory)
                 return styledEntry
             })
-
         )
 
         const styledCommands = commandOptions.map(entry => (
