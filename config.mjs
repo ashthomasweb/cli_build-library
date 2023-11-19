@@ -1,4 +1,5 @@
 import { styled } from "./styles.mjs"
+
 export const relativeDirectoryArray = [`c:`, `Users`, `rideo`, `Dropbox`, 'Code', 'projects', 'cli', `initial-test`]
 export const componentDirectory = `${relativeDirectoryArray.join('/')}/library/components`
 export const halRootDirectory = 'c:/Users/rideo/Dropbox/Code/projects/cli/initial-test'
@@ -12,7 +13,19 @@ export const mainMenuChoices = {
     settings: `User Settings`   
 }
 
-const standardCommands = ['Back', 'Cancel']
-export const defaultCommands = [...standardCommands, 'Place Here']
-export const settingsCommands = [...standardCommands, 'Set /src Here']
-export const newFileCommands = [...standardCommands, 'New File In Current Directory', 'Create New Folder In Current Directory']
+export const navCommandObject = {
+    back: 'Back',
+    cancel: 'Cancel',
+    place: 'Place Here',
+    setSRC: 'Set /src Here',
+    newFile: 'New File In Current Directory',
+    newFolder: 'Create New Folder In Current Directory',
+}
+
+const cmd = navCommandObject
+
+const standardCommands = [cmd.back, cmd.cancel]
+export const defaultCommands = [...standardCommands, cmd.place]
+export const settingsCommands = [...standardCommands, cmd.setSRC]
+export const newFileFolderCommands = [...standardCommands, cmd.newFile, cmd.newFolder]
+export const fromLibraryCommands = [cmd.cancel]

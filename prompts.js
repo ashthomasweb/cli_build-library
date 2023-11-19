@@ -19,13 +19,6 @@ export const mainMenuPrompt = [{
     ]
 }]
 
-export const srcDirPrompt = [{
-    type: 'list',
-    name: 'src_directory',
-    message: 'In the /src directory?',
-    choices: ['Yes', 'No']
-}]
-
 export const whatDirPrompt = [{
     type: 'input',
     name: 'what_dir',
@@ -35,27 +28,13 @@ export const whatDirPrompt = [{
 export const whatFilenamePrompt = [{
     type: 'input',
     name: 'what_filename',
-    message: 'What is the file to be called?'
-}]
-
-export const renameFilePrompt = [{
-    type: 'list',
-    name: 'rename',
-    message: 'Rename the component?',
-    choices: ['Yes', 'No']
+    message: 'What is the file to be called? Include file extension!'
 }]
 
 export const whatComponentNamePrompt = [{
     type: 'input',
     name: 'what_compname',
-    message: 'What is the component to be called?'
-}]
-
-export const selectFilePrompt = [{
-    type: 'list',
-    name: 'selectedFile',
-    message: 'Select a file from the directory:',
-    choices: () => gatherDynamicFolderContents(componentDirectory)
+    message: `What is the component named? i.e - the 'in-file' exported name.` 
 }]
 
 export const srcFolderPrompt = [{
@@ -74,10 +53,23 @@ export const settingsPrompt = [{
 export function generateDynamicPrompt(commandArray = defaultCommands) {
     const dynamicFolderPrompt = [{
         type: 'list',
-        name: 'root_contents',
+        name: 'contents',
         message: 'Navigation',
         choices: () => gatherDynamicFolderContents(pathArray.join('/'), commandArray),
-        pageSize: 25
+        pageSize: 25,
+        default: commandArray.length
+    }]
+    return dynamicFolderPrompt
+}
+
+export function generateDynamicLibraryPrompt(commandArray = defaultCommands) {
+    const dynamicFolderPrompt = [{
+        type: 'list',
+        name: 'selected_file',
+        message: 'Navigation',
+        choices: () => gatherDynamicFolderContents(componentDirectory, commandArray),
+        pageSize: 25,
+        default: commandArray.length
     }]
     return dynamicFolderPrompt
 }

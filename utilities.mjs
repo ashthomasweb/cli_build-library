@@ -1,7 +1,7 @@
 import { promises, stat } from 'fs'
 import util from 'util'
 import inquirer from 'inquirer'
-import { styled } from './styles.mjs'
+import { clearANSI, styled } from './styles.mjs'
 import { writeFile } from 'fs'
 
 const statPromise = util.promisify(stat)
@@ -33,6 +33,7 @@ export async function gatherDynamicFolderContents(inputDirectory, commandOptions
             new inquirer.Separator(),
             ...taggedFiles
         ]
+
     } catch (error) {
         console.error('Error reading directory:', error)
         return []
@@ -47,4 +48,8 @@ export function fsWriteFile(path, newContent) {
             console.log('File content changed successfully.')
         }
     })
+}
+
+export function answerMatch(answer, command) {
+    return clearANSI(answer) === command
 }
