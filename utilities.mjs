@@ -4,9 +4,9 @@ import inquirer from 'inquirer'
 import { clearANSI, styled } from './styles.mjs'
 import { writeFile } from 'fs'
 
-const statPromise = util.promisify(stat)
+export const statPromise = util.promisify(stat)
 
-function colorizeString(input, isDirectory) {
+export function colorizeString(input, isDirectory) {
     return isDirectory ? styled(styled(`${input}`, 'bold'), 'cyan') : styled(input, 'green')
 }
 
@@ -41,6 +41,8 @@ export async function gatherDynamicFolderContents(inputDirectory, commandOptions
 }
 
 export function fsWriteFile(path, newContent) {
+    console.log(path)
+    console.log(newContent)
     writeFile(path, newContent, (err) => {
         if (err) {
             console.error('Error writing to file:', err)

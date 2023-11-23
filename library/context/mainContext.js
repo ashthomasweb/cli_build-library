@@ -1,1 +1,6 @@
-console.log('Hello, World!'
+
+function !!NAME!!() {
+    console.log('Hello, World!')
+}
+
+export default !!NAME!!

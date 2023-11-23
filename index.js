@@ -1,9 +1,9 @@
 #! /usr/bin/env node
 import inquirer from 'inquirer'
 import * as p from './prompts.js'
-import { mainMenuChoices as mmc } from './config.mjs'
+import { defaultCommands, mainMenuChoices as mmc } from './config.mjs'
 import { libraryNav, nav } from './nav.mjs'
-import { newFileFolderCommands } from "./config.mjs"
+import { newFileFolderCommands, standardCommands } from "./config.mjs"
 import { settingsAction } from './inquirerActions.mjs'
 
 inquirer.prompt(p.mainMenuPrompt).then(answers => {
@@ -14,7 +14,7 @@ inquirer.prompt(p.mainMenuPrompt).then(answers => {
 
     } else if (answers.main_menu === mmc.copyFrom) {
 
-        libraryNav()
+        libraryNav(defaultCommands)
 
     } else if (answers.main_menu === mmc.settings) {
 
@@ -22,7 +22,7 @@ inquirer.prompt(p.mainMenuPrompt).then(answers => {
 
     } else if (answers.main_menu === mmc.explore) {
 
-        nav()
+        nav(standardCommands)
 
     } else if (answers.main_menu === mmc.help) {
 

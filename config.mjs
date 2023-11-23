@@ -1,9 +1,10 @@
 import { styled } from "./styles.mjs"
 
 export const relativeDirectoryArray = [`c:`, `Users`, `rideo`, `Dropbox`, 'Code', 'projects', 'cli', `initial-test`]
-export const componentDirectory = `${relativeDirectoryArray.join('/')}/library/components`
+export const componentDirectory = [...relativeDirectoryArray, 'library']
 export const halRootDirectory = 'c:/Users/rideo/Dropbox/Code/projects/cli/initial-test'
 export const userRootDirectory = 'c:/Users/rideo/Dropbox/Code/projects/cli/hal-test'
+export const libraryStyleDirectory = [...relativeDirectoryArray, 'compStyles']
 
 export const mainMenuChoices = {
     copyFrom: `${styled('Copy', 'yellow')} From Reuseable Component Library`,
@@ -24,7 +25,7 @@ export const navCommandObject = {
 
 const cmd = navCommandObject
 
-const standardCommands = [cmd.back, cmd.cancel]
+export const standardCommands = [cmd.back, cmd.cancel]
 export const defaultCommands = [...standardCommands, cmd.place]
 export const settingsCommands = [...standardCommands, cmd.setSRC]
 export const newFileFolderCommands = [...standardCommands, cmd.newFile, cmd.newFolder]

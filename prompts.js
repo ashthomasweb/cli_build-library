@@ -65,9 +65,9 @@ export function generateDynamicPrompt(commandArray = defaultCommands) {
 export function generateDynamicLibraryPrompt(commandArray = defaultCommands) {
     const dynamicFolderPrompt = [{
         type: 'list',
-        name: 'selected_file',
+        name: 'selection',
         message: 'Navigation',
-        choices: () => gatherDynamicFolderContents(componentDirectory, commandArray),
+        choices: () => gatherDynamicFolderContents(componentDirectory.join('/'), commandArray),
         pageSize: 25,
         default: commandArray.length
     }]
