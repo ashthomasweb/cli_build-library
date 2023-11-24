@@ -41,6 +41,8 @@ export async function gatherDynamicFolderContents(inputDirectory, commandOptions
 }
 
 export function fsWriteFile(path, newContent) {
+    console.log(path)
+    console.log(newContent)
     writeFile(path, newContent, (err) => {
         if (err) {
             console.error('Error writing to file:', err)

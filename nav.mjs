@@ -8,7 +8,8 @@ import {
     directoriesContainingStyleSheets,
     projectComponentStylesFolder,
     projectMainStylesheet,
-    placeComponentCommands
+    placeComponentCommands,
+    directoriesWithNoExport
 } from "./config.mjs"
 import inquirer from "inquirer"
 import * as p from './prompts.js'
@@ -19,14 +20,19 @@ import { setSourceAction, newFileAction, newFolderAction } from "./inquirerActio
 import { navCommandObject as cmd } from "./config.mjs"
 import { answerMatch, statPromise, colorizeString } from "./utilities.mjs"
 
-var tempFileContent = null
 var tempComponentName = null
-var tempFilePath = null
 var tempComponentContent = null
 var tempStylesheetContent = null
 var tempPrimaryStylesheetContent = null
 var tempStyledComponentType = null
 
+function garbageCollectTempVars() {
+    tempComponentName = null
+    tempComponentContent = null
+    tempStylesheetContent = null
+    tempPrimaryStylesheetContent = null
+    tempStyledComponentType = null
+}
 export var pathArray = relativeDirectoryArray
 
 export function nav(commandArray = defaultCommands) {
@@ -40,15 +46,18 @@ export function nav(commandArray = defaultCommands) {
         } else if (answerMatch(answers.contents, cmd.place)) {
 
 
-            fsWriteFile(`${pathArray.join('/')}/${tempComponentName}`, tempComponentContent)
-            fsWriteFile(`${projectComponentStylesFolder.join('/')}/${tempStyledComponentType}s/${tempComponentName.split('.')[0]}.scss`, tempStylesheetContent)
-            fsWriteFile(`${projectMainStylesheet.join('/')}`, tempPrimaryStylesheetContent)
+            try {
 
+                fsWriteFile(`${pathArray.join('/')}/${tempComponentName}`, tempComponentContent)
+                if (tempStylesheetContent !== null) {
+                    fsWriteFile(`${projectComponentStylesFolder.join('/')}/${tempStyledComponentType}s/${tempComponentName.split('.')[0]}.scss`, tempStylesheetContent)
+                    fsWriteFile(`${projectMainStylesheet.join('/')}`, tempPrimaryStylesheetContent)
+                }
+            } catch (error) {
+                console.log('Something went wrong!', error)
+            }
 
-
-            tempFileContent = null
-            tempComponentName = null
-            tempFilePath = null
+            garbageCollectTempVars()
         } else if (answerMatch(answers.contents, cmd.setSRC)) {
             setSourceAction()
         } else if (answerMatch(answers.contents, cmd.newFile)) {
@@ -107,7 +116,7 @@ export function libraryNav(commandArray = defaultCommands) {
                             tempComponentContent = readFileSync(libraryPath.join('/'), 'utf8').replace(/!!NAME!!/g, tempComponentName).toString()
                             let newStyleImport
                             if (tempStyledComponentType === 'component') {
-                                const replaceTag = `/* HAL COMPONENT STYLESHEET TAG */`
+                                const replaceTag = `/* HAL COMPONENTS STYLESHEET TAG */`
                                 newStyleImport = `@import "./components/${relativeStyleSheet.split('.')[0]}";`
                                 const newStringBlock = `${newStyleImport}\n${replaceTag}`
                                 tempPrimaryStylesheetContent = primaryStyleSheet.replace(/\/\*\s*HAL COMPONENTS STYLESHEET TAG\s*\*\//, newStringBlock)
@@ -134,7 +143,24 @@ export function libraryNav(commandArray = defaultCommands) {
                         })
 
                     } else {
-                        // handle selection that doesn't have a stylesheet
+                        try {
+                            inquirer.prompt(p.whatFilenamePrompt).then(answers => {
+                                tempComponentName = answers.what_filename
+                                var regexPattern = '(^|[/\\\\])(' + directoriesWithNoExport.join('|') + ')([/\\\\]|$)';
+                                const noExportRegExp = new RegExp(regexPattern)
+
+                                if (libraryPath.join('/').match(noExportRegExp) === null) {
+                                    inquirer.prompt(p.whatComponentNamePrompt).then(answers => {
+                                        tempComponentContent = readFileSync(libraryPath.join('/'), 'utf8').replace(/!!NAME!!/g, answers.what_compname).toString()
+                                    })
+                                } else {
+                                    tempComponentContent = readFileSync(libraryPath.join('/'), 'utf8').toString()
+                                }
+                                nav(placeComponentCommands)
+                            })
+                        } catch (err) {
+                            console.error('Error reading file:', err)
+                        }
                     }
 
 
