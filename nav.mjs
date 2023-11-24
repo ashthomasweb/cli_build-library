@@ -1,4 +1,12 @@
-import { newFileFolderCommands, relativeDirectoryArray, libraryStyleDirectory, componentDirectory, defaultCommands, fromLibraryCommands } from "./config.mjs"
+import {
+    newFileFolderCommands,
+    relativeDirectoryArray,
+    libraryStyleDirectory,
+    componentDirectory,
+    defaultCommands,
+    fromLibraryCommands,
+    directoriesContainingStyleSheets
+} from "./config.mjs"
 import inquirer from "inquirer"
 import * as p from './prompts.js'
 import { clearANSI } from './styles.mjs'
@@ -39,7 +47,6 @@ export function nav(commandArray = defaultCommands) {
         } else if (answerMatch(answers.contents, cmd.newFolder)) {
             newFolderAction(pathArray)
         } else {
-            console.log('stat route')
             stat(`${pathArray.join('/')}/${clearANSI(answers.contents)}`, (err, stats) => {
                 if (err) {
                     console.error('Error getting file/folder information:', err)
@@ -75,43 +82,46 @@ export function libraryNav(commandArray = defaultCommands) {
                 if (stats.isFile()) {
                     console.log('isFile')
                     libraryPath.push(clearANSI(answers.selection))
-                    // tempFilePath = libraryPath.join('/')
-                    try {
-                        const data = readFileSync(libraryPath.join('/'), 'utf8')
-                        inquirer.prompt(p.whatFilenamePrompt).then(answers => {
-                            tempFileName = answers.what_filename
-                            inquirer.prompt(p.whatComponentNamePrompt).then(answers => {
-                                tempFileContent = data.replace(/!!NAME!!/g, answers.what_compname).toString()
-                                nav(defaultCommands)
-                            })
-                        })
-                    } catch (err) {
-                        console.error('Error reading file:', err)
-                    }
-                } else if (stats.isDirectory()) {
-                    if (answerMatch(answers.selection, 'components')) {
-                        console.log('test')
-                        async function list(inputDirectory) {
+                    var regexPattern = '(^|[/\\\\])(' + directoriesContainingStyleSheets.join('|') + ')([/\\\\]|$)';
+                    const styledComponentRegex = new RegExp(regexPattern)
 
-                            const files = await promises.readdir(inputDirectory)
-                            const taggedFiles = await Promise.all(
-                                files.map(async (entry) => {
-                                    const fullPath = `${inputDirectory}/${entry}`
-                                    const stats = await statPromise(fullPath)
-                                    const isDirectory = stats.isDirectory()
-                                    const styledEntry = colorizeString(entry, isDirectory)
-                                    return styledEntry
-                                })
-                            )
-                            console.log(files)
-                            return taggedFiles
+                    if (libraryPath.join('/').match(styledComponentRegex)) {
+                        console.log('test')
+                        async function getStyleSheets() {
+                            const styleFiles = await promises.readdir(libraryStyleDirectory.join('/'))
+                            return styleFiles
                         }
-                        list(libraryStyleDirectory.join('/'))
-                    } else {
-                        console.log('not components')
-                        libraryPath.push(clearANSI(answers.selection))
-                        libraryNav(commandArray)
+                        getStyleSheets().then(result => {
+                            const styleFiles = result
+                            const selectedFile = answers.selection
+                            const selectedFileName = clearANSI(selectedFile.split('.')[0])
+                            const relativeStyleSheet = styleFiles.filter(entry => entry.includes(selectedFileName))[0]
+                            const relativeStylePath = libraryStyleDirectory.join('/') + '/' + relativeStyleSheet
+                            console.log(relativeStylePath)
+                            const componentPath = libraryPath
+                            console.log(componentPath.join('/'))
+                            // try {
+                            //     const data = readFileSync(libraryPath.join('/'), 'utf8')
+                            //     inquirer.prompt(p.whatFilenamePrompt).then(answers => {
+                            //         tempFileName = answers.what_filename
+                            //         inquirer.prompt(p.whatComponentNamePrompt).then(answers => {
+                            //             tempFileContent = data.replace(/!!NAME!!/g, answers.what_compname).toString()
+                            //             nav(defaultCommands)
+                            //         })
+                            //     })
+                            // } catch (err) {
+                            //     console.error('Error reading file:', err)
+                            // }
+
+
+                        })
+                        
                     }
+
+
+                } else if (stats.isDirectory()) {
+                    libraryPath.push(clearANSI(answers.selection))
+                    libraryNav(commandArray)
                 } else {
                     console.log('The selection is neither a file nor a folder.')
                 }

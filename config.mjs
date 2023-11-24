@@ -5,6 +5,7 @@ export const componentDirectory = [...relativeDirectoryArray, 'library']
 export const halRootDirectory = 'c:/Users/rideo/Dropbox/Code/projects/cli/initial-test'
 export const userRootDirectory = 'c:/Users/rideo/Dropbox/Code/projects/cli/hal-test'
 export const libraryStyleDirectory = [...relativeDirectoryArray, 'compStyles']
+export const directoriesContainingStyleSheets = ['components', 'views']
 
 export const mainMenuChoices = {
     copyFrom: `${styled('Copy', 'yellow')} From Reuseable Component Library`,
