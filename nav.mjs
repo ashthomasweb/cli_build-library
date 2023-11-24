@@ -5,7 +5,10 @@ import {
     componentDirectory,
     defaultCommands,
     fromLibraryCommands,
-    directoriesContainingStyleSheets
+    directoriesContainingStyleSheets,
+    projectComponentStylesFolder,
+    projectMainStylesheet,
+    placeComponentCommands
 } from "./config.mjs"
 import inquirer from "inquirer"
 import * as p from './prompts.js'
@@ -17,8 +20,11 @@ import { navCommandObject as cmd } from "./config.mjs"
 import { answerMatch, statPromise, colorizeString } from "./utilities.mjs"
 
 var tempFileContent = null
-var tempFileName = null
+var tempComponentName = null
 var tempFilePath = null
+var tempComponentContent = null
+var tempStylesheetContent = null
+
 export var pathArray = relativeDirectoryArray
 
 export function nav(commandArray = defaultCommands) {
@@ -30,15 +36,14 @@ export function nav(commandArray = defaultCommands) {
         } else if (answerMatch(answers.contents, cmd.cancel)) {
             console.log('Goodbye!')
         } else if (answerMatch(answers.contents, cmd.place)) {
-            // check for sass match
-            // if sass match -
-            // create folder
-            // find sass
-            // copy sass
-            // write new files in folder
-            fsWriteFile(`${pathArray.join('/')}/${tempFileName}`, tempFileContent) // write component file
+
+
+            fsWriteFile(`${pathArray.join('/')}/${tempComponentName}`, tempComponentContent) // write component file
+            fsWriteFile(`${projectComponentStylesFolder.join('/')}/${tempComponentName.split('.')[0]}.scss`, tempStylesheetContent) // write component file
+
+
             tempFileContent = null
-            tempFileName = null
+            tempComponentName = null
             tempFilePath = null
         } else if (answerMatch(answers.contents, cmd.setSRC)) {
             setSourceAction()
@@ -54,12 +59,6 @@ export function nav(commandArray = defaultCommands) {
                     if (stats.isFile()) {
                         console.log('No action available')
                     } else if (stats.isDirectory()) {
-
-                        // if (pathArray[pathArray.length - 1] === 'components') {
-                        //     console.log('test')
-                        // } else {
-
-                        // }
                         pathArray.push(clearANSI(answers.contents))
                         nav(commandArray)
                     } else {
@@ -92,30 +91,28 @@ export function libraryNav(commandArray = defaultCommands) {
                             return styleFiles
                         }
                         getStyleSheets().then(result => {
-                            const styleFiles = result
-                            const selectedFile = answers.selection
-                            const selectedFileName = clearANSI(selectedFile.split('.')[0])
-                            const relativeStyleSheet = styleFiles.filter(entry => entry.includes(selectedFileName))[0]
-                            const relativeStylePath = libraryStyleDirectory.join('/') + '/' + relativeStyleSheet
-                            console.log(relativeStylePath)
-                            const componentPath = libraryPath
-                            console.log(componentPath.join('/'))
-                            // try {
-                            //     const data = readFileSync(libraryPath.join('/'), 'utf8')
-                            //     inquirer.prompt(p.whatFilenamePrompt).then(answers => {
-                            //         tempFileName = answers.what_filename
-                            //         inquirer.prompt(p.whatComponentNamePrompt).then(answers => {
-                            //             tempFileContent = data.replace(/!!NAME!!/g, answers.what_compname).toString()
-                            //             nav(defaultCommands)
-                            //         })
-                            //     })
-                            // } catch (err) {
-                            //     console.error('Error reading file:', err)
-                            // }
+                            const selectedFileName = clearANSI(answers.selection.split('.')[0])
+                            const relativeStyleSheet = result.filter(entry => entry.includes(selectedFileName))[0]
+                            tempStylesheetContent = readFileSync(`${libraryStyleDirectory.join('/')}/${relativeStyleSheet}`, 'utf8')
+                            tempComponentContent = readFileSync(libraryPath.join('/'), 'utf8')
+
+                            try {
+                                inquirer.prompt(p.whatFilenamePrompt).then(answers => {
+                                    tempComponentName = answers.what_filename
+                                    inquirer.prompt(p.whatComponentNamePrompt).then(() => {
+                                        tempComponentContent = tempComponentContent.replace(/!!NAME!!/g, tempComponentName).toString()
+                                        nav(placeComponentCommands)
+                                    })
+                                })
+                            } catch (err) {
+                                console.error('Error reading file:', err)
+                            }
 
 
                         })
                         
+                    } else {
+                        // handle selection that doesn't have a stylesheet
                     }
 
 

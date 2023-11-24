@@ -6,6 +6,8 @@ export const halRootDirectory = 'c:/Users/rideo/Dropbox/Code/projects/cli/initia
 export const userRootDirectory = 'c:/Users/rideo/Dropbox/Code/projects/cli/hal-test'
 export const libraryStyleDirectory = [...relativeDirectoryArray, 'compStyles']
 export const directoriesContainingStyleSheets = ['components', 'views']
+export const projectComponentStylesFolder = [...relativeDirectoryArray, 'scss', 'components']
+export const projectMainStylesheet = [...relativeDirectoryArray, 'styles.scss']
 
 export const mainMenuChoices = {
     copyFrom: `${styled('Copy', 'yellow')} From Reuseable Component Library`,
@@ -31,3 +33,4 @@ export const defaultCommands = [...standardCommands, cmd.place]
 export const settingsCommands = [...standardCommands, cmd.setSRC]
 export const newFileFolderCommands = [...standardCommands, cmd.newFile, cmd.newFolder]
 export const fromLibraryCommands = [cmd.cancel]
+export const placeComponentCommands = [...standardCommands, cmd.newFolder, cmd.place,]
