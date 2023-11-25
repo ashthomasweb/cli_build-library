@@ -44,10 +44,7 @@ export function nav(commandArray = defaultCommands) {
         } else if (answerMatch(answers.contents, cmd.cancel)) {
             console.log('Goodbye!')
         } else if (answerMatch(answers.contents, cmd.place)) {
-
-
             try {
-
                 fsWriteFile(`${pathArray.join('/')}/${tempComponentName}`, tempComponentContent)
                 if (tempStylesheetContent !== null) {
                     fsWriteFile(`${projectComponentStylesFolder.join('/')}/${tempStyledComponentType}s/${tempComponentName.split('.')[0]}.scss`, tempStylesheetContent)
@@ -55,8 +52,8 @@ export function nav(commandArray = defaultCommands) {
                 }
             } catch (error) {
                 console.log('Something went wrong!', error)
+                garbageCollectTempVars()
             }
-
             garbageCollectTempVars()
         } else if (answerMatch(answers.contents, cmd.setSRC)) {
             setSourceAction()
@@ -92,7 +89,6 @@ export function libraryNav(commandArray = defaultCommands) {
                 console.error('Error getting file/folder information:', err)
             } else {
                 if (stats.isFile()) {
-                    console.log('isFile')
                     libraryPath.push(clearANSI(answers.selection))
                     if (clearANSI(answers.selection).includes('component')) {
                         tempStyledComponentType = 'component'
@@ -103,7 +99,6 @@ export function libraryNav(commandArray = defaultCommands) {
                     const styledComponentRegex = new RegExp(regexPattern)
 
                     if (libraryPath.join('/').match(styledComponentRegex)) {
-                        console.log('test')
                         async function getStyleSheets() {
                             const styleFiles = await promises.readdir(libraryStyleDirectory.join('/'))
                             return styleFiles
@@ -113,7 +108,8 @@ export function libraryNav(commandArray = defaultCommands) {
                             const relativeStyleSheet = result.filter(entry => entry.includes(selectedFileName))[0]
                             const primaryStyleSheet = readFileSync(`${projectMainStylesheet.join('/')}`).toString()
                             tempStylesheetContent = readFileSync(`${libraryStyleDirectory.join('/')}/${relativeStyleSheet}`, 'utf8')
-                            tempComponentContent = readFileSync(libraryPath.join('/'), 'utf8').replace(/!!NAME!!/g, tempComponentName).toString()
+                            
+                            // REFACTOR
                             let newStyleImport
                             if (tempStyledComponentType === 'component') {
                                 const replaceTag = `/* HAL COMPONENTS STYLESHEET TAG */`
@@ -126,19 +122,19 @@ export function libraryNav(commandArray = defaultCommands) {
                                 const newStringBlock = `${newStyleImport}\n${replaceTag}`
                                 tempPrimaryStylesheetContent = primaryStyleSheet.replace(/\/\*\s*HAL VIEWS STYLESHEET TAG\s*\*\//, newStringBlock)
                             }
-
-
+                            // END REFACTOR
+                            
                             try {
                                 inquirer.prompt(p.whatFilenamePrompt).then(answers => {
                                     tempComponentName = answers.what_filename
-                                    inquirer.prompt(p.whatComponentNamePrompt).then(() => {
+                                    inquirer.prompt(p.whatComponentNamePrompt).then(answers => {
+                                        tempComponentContent = readFileSync(libraryPath.join('/'), 'utf8').replace(/!!NAME!!/g, answers.what_compname).toString()
                                         nav(placeComponentCommands)
                                     })
                                 })
                             } catch (err) {
                                 console.error('Error reading file:', err)
                             }
-
 
                         })
 
@@ -152,11 +148,12 @@ export function libraryNav(commandArray = defaultCommands) {
                                 if (libraryPath.join('/').match(noExportRegExp) === null) {
                                     inquirer.prompt(p.whatComponentNamePrompt).then(answers => {
                                         tempComponentContent = readFileSync(libraryPath.join('/'), 'utf8').replace(/!!NAME!!/g, answers.what_compname).toString()
+                                        nav(placeComponentCommands)
                                     })
                                 } else {
                                     tempComponentContent = readFileSync(libraryPath.join('/'), 'utf8').toString()
+                                    nav(placeComponentCommands)
                                 }
-                                nav(placeComponentCommands)
                             })
                         } catch (err) {
                             console.error('Error reading file:', err)
