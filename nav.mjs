@@ -108,22 +108,35 @@ export function libraryNav(commandArray = defaultCommands) {
                             const relativeStyleSheet = result.filter(entry => entry.includes(selectedFileName))[0]
                             const primaryStyleSheet = readFileSync(`${projectMainStylesheet.join('/')}`).toString()
                             tempStylesheetContent = readFileSync(`${libraryStyleDirectory.join('/')}/${relativeStyleSheet}`, 'utf8')
-                            
+
                             // REFACTOR
                             let newStyleImport
-                            if (tempStyledComponentType === 'component') {
-                                const replaceTag = `/* HAL COMPONENTS STYLESHEET TAG */`
-                                newStyleImport = `@import "./components/${relativeStyleSheet.split('.')[0]}";`
+                            function updatePrimaryStyleSheet(componentType) {
+                                console.log(componentType)
+                                const replaceTag = `/* HAL ${componentType.toUpperCase()}S STYLESHEET TAG */`
+                                newStyleImport = `@import "./${componentType}s/${relativeStyleSheet.split('.')[0]}";`
                                 const newStringBlock = `${newStyleImport}\n${replaceTag}`
-                                tempPrimaryStylesheetContent = primaryStyleSheet.replace(/\/\*\s*HAL COMPONENTS STYLESHEET TAG\s*\*\//, newStringBlock)
-                            } else if (tempStyledComponentType === 'view') {
-                                const replaceTag = `/* HAL VIEWS STYLESHEET TAG */`
-                                newStyleImport = `@import "./views/${relativeStyleSheet.split('.')[0]}";`
-                                const newStringBlock = `${newStyleImport}\n${replaceTag}`
-                                tempPrimaryStylesheetContent = primaryStyleSheet.replace(/\/\*\s*HAL VIEWS STYLESHEET TAG\s*\*\//, newStringBlock)
+                                const regexPattern = new RegExp(`\\/\\*\\s*HAL ${componentType.toUpperCase()}S STYLESHEET TAG\\s*\\*\\/`);
+
+                                // const replaceTagRegex = `/\/\*\s*HAL ${componentType}S STYLESHEET TAG\s*\*\//`
+                                // const tagRegex = new RegExp(replaceTagRegex)
+                                tempPrimaryStylesheetContent = primaryStyleSheet.replace(regexPattern, newStringBlock)
+
                             }
+                            updatePrimaryStyleSheet(tempStyledComponentType)
+                            // if (tempStyledComponentType === 'component') {
+                            //     // const replaceTag = `/* HAL COMPONENTS STYLESHEET TAG */`
+                            //     // newStyleImport = `@import "./components/${relativeStyleSheet.split('.')[0]}";`
+                            //     // const newStringBlock = `${newStyleImport}\n${replaceTag}`
+                            //     tempPrimaryStylesheetContent = primaryStyleSheet.replace(/\/\*\s*HAL COMPONENTS STYLESHEET TAG\s*\*\//, newStringBlock)
+                            // } else if (tempStyledComponentType === 'view') {
+                            //     // const replaceTag = `/* HAL VIEWS STYLESHEET TAG */`
+                            //     // newStyleImport = `@import "./views/${relativeStyleSheet.split('.')[0]}";`
+                            //     // const newStringBlock = `${newStyleImport}\n${replaceTag}`
+                            //     tempPrimaryStylesheetContent = primaryStyleSheet.replace(/\/\*\s*HAL VIEWS STYLESHEET TAG\s*\*\//, newStringBlock)
+                            // }
                             // END REFACTOR
-                            
+
                             try {
                                 inquirer.prompt(p.whatFilenamePrompt).then(answers => {
                                     tempComponentName = answers.what_filename
