@@ -37,11 +37,11 @@ function garbageCollectTempVars() {
 }
 
 function logTempVars() {
-    console.log('comp filename', tempComponentFilename)
-    console.log('comp content', tempComponentContent)
-    console.log('comp export name', tempComponentName)
-    console.log('stylesheet content', tempStylesheetContent)
-    console.log('primary stylesheet content', tempPrimaryStylesheetContent)
+    // console.log('comp filename', tempComponentFilename)
+    // console.log('comp content', tempComponentContent)
+    // console.log('comp export name', tempComponentName)
+    // console.log('stylesheet content', tempStylesheetContent)
+    // console.log('primary stylesheet content', tempPrimaryStylesheetContent)
     console.log('comp type', tempStyledComponentType)
 }
 
@@ -58,12 +58,13 @@ export function nav(commandArray = defaultCommands) {
         } else if (answerMatch(answers.contents, cmd.place)) {
             try {
                 logTempVars()
+
                 // Write new component
                 fsWriteFile(`${pathArray.join('/')}/${tempComponentFilename}`, tempComponentContent)
 
                 if (tempStylesheetContent !== null) {
                     // Write new scss file
-                    fsWriteFile(`${projectComponentStylesFolder.join('/')}/${tempStyledComponentType}s/${tempComponentFilename.split('.')[0]}.scss`, tempStylesheetContent)
+                    fsWriteFile(`${projectComponentStylesFolder.join('/')}/${tempStyledComponentType}/${tempComponentFilename.split('.')[0]}.scss`, tempStylesheetContent)
 
                     // Write updated primary stylesheet
                     fsWriteFile(`${projectMainStylesheet.join('/')}`, tempPrimaryStylesheetContent)
@@ -108,13 +109,12 @@ export function libraryNav(commandArray = defaultCommands) {
             } else {
                 if (stats.isFile()) {
                     libraryPath.push(clearANSI(answers.selection))
-                    if (clearANSI(answers.selection).includes('component')) {
-                        tempStyledComponentType = 'component'
-                    } else if ((clearANSI(answers.selection).includes('view'))) {
-                        tempStyledComponentType = 'view'
-                    }
                     var regexPattern = '(^|[/\\\\])(' + directoriesContainingStyleSheets.join('|') + ')([/\\\\]|$)';
                     const styledComponentRegex = new RegExp(regexPattern)
+                    
+                    // else if ((clearANSI(answers.selection).includes('view'))) {
+                    //     tempStyledComponentType = 'view'
+                    // }
 
                     if (libraryPath.join('/').match(styledComponentRegex)) {
                         async function getStyleSheets() {
@@ -122,15 +122,15 @@ export function libraryNav(commandArray = defaultCommands) {
                             return styleFiles
                         }
                         getStyleSheets().then(result => {
-                            const selectedFileName = clearANSI(answers.selection.split('.')[0])
-                            const relativeStyleSheet = result.filter(entry => entry.includes(selectedFileName))[0]
-                            const primaryStyleSheet = readFileSync(`${projectMainStylesheet.join('/')}`).toString()
-                            tempStylesheetContent = readFileSync(`${libraryStyleDirectory.join('/')}/${relativeStyleSheet}`, 'utf8')
+                            const relativeStyleSheetFilename = result.filter(entry => entry.includes(clearANSI(answers.selection.split('.')[0])))[0]
+                            tempStylesheetContent = readFileSync(`${libraryStyleDirectory.join('/')}/${relativeStyleSheetFilename}`, 'utf8')
+
+                            const primaryStyleSheetInitContent = readFileSync(`${projectMainStylesheet.join('/')}`).toString()
                             
                             try {
                                 inquirer.prompt(p.whatFilenamePrompt).then(answers => {
                                     tempComponentFilename = answers.what_filename
-                                    tempPrimaryStylesheetContent = updatePrimaryStyleSheet(primaryStyleSheet, tempComponentFilename, tempStyledComponentType)
+                                    tempPrimaryStylesheetContent = updatePrimaryStyleSheet(primaryStyleSheetInitContent, tempComponentFilename, tempStyledComponentType)
                                     inquirer.prompt(p.whatComponentNamePrompt).then(answers => {
                                         tempComponentName = answers.what_compname 
                                         tempComponentContent = readFileSync(libraryPath.join('/'), 'utf8').replace(/!!NAME!!/g, tempComponentName).toString()
@@ -169,6 +169,11 @@ export function libraryNav(commandArray = defaultCommands) {
 
                 } else if (stats.isDirectory()) {
                     libraryPath.push(clearANSI(answers.selection))
+                    console.log(directoriesContainingStyleSheets, answers.selection)
+                    if (directoriesContainingStyleSheets.includes(clearANSI(answers.selection))) {
+                        console.log('test!')
+                        tempStyledComponentType = clearANSI(answers.selection)
+                    } 
                     libraryNav(commandArray)
                 } else {
                     console.log('The selection is neither a file nor a folder.')

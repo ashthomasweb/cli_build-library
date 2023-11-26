@@ -56,9 +56,9 @@ export function answerMatch(answer, command) {
 
 export function updatePrimaryStyleSheet(primaryStyleSheet, componentFilename, componentType) {
     let newStyleImport
-    const replaceTag = `/* HAL ${componentType.toUpperCase()}S STYLESHEET TAG */`
-    newStyleImport = `@import "./${componentType}s/${componentFilename.split('.')[0]}";`
+    const replaceTag = `/* HAL ${componentType.toUpperCase()} STYLESHEET TAG */`
+    newStyleImport = `@import "./${componentType}/${componentFilename.split('.')[0]}";`
     const newStringBlock = `${newStyleImport}\n${replaceTag}`
-    const regexPattern = new RegExp(`\\/\\*\\s*HAL ${componentType.toUpperCase()}S STYLESHEET TAG\\s*\\*\\/`);
+    const regexPattern = new RegExp(`\\/\\*\\s*HAL ${componentType.toUpperCase()} STYLESHEET TAG\\s*\\*\\/`);
     return primaryStyleSheet.replace(regexPattern, newStringBlock)
 }
