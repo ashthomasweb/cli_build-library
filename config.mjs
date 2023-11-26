@@ -1,12 +1,12 @@
 import { styled } from "./styles.mjs"
 
 export const relativeDirectoryArray = [`c:`, `Users`, `rideo`, `Dropbox`, 'Code', 'projects', 'cli', `initial-test`] // NEEDS to be set on install to local folder
-export const componentDirectory = [...relativeDirectoryArray, 'library'] // NEEDS to reference /installedFolder/node_modules/hal/library
+export const componentDirectory = [...relativeDirectoryArray, 'componentLibrary', 'library'] // NEEDS to reference /installedFolder/node_modules/hal/library
 export const halRootDirectory = 'c:/Users/rideo/Dropbox/Code/projects/cli/initial-test' // Currently not in use - referenced in setSourceAction()
 export const userRootDirectory = 'c:/Users/rideo/Dropbox/Code/projects/cli/hal-test'// Currently not in use - referenced in setSourceAction()
 
 /* Used in prompts for lookups */
-export const libraryStyleDirectory = [...relativeDirectoryArray, 'compStyles'] // 'Library' folder needs structure and better naming convention
+export const libraryStyleDirectory = [...relativeDirectoryArray, 'componentLibrary', 'stylesheets'] // 'Library' folder needs structure and better naming convention
 export const directoriesContainingStyleSheets = ['components', 'views']
 export const directoriesWithNoExport = ['servers']
 export const projectComponentStylesFolder = [...relativeDirectoryArray, 'newTestFolder', 'scss'] // NEEDS to be set to best practice structure along with proper relativeDirectory
