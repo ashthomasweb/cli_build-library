@@ -10,7 +10,7 @@ import {
     /* Icons */
 } from './export-hub'
 
-const App = (props) => {
+const !!NAME!! = (props) => {
     const {
         state: { display },
         dispatch,
@@ -53,4 +53,4 @@ const App = (props) => {
     )
 }
 
-export default App
+export default !!NAME!!

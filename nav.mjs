@@ -15,24 +15,36 @@ import inquirer from "inquirer"
 import * as p from './prompts.js'
 import { clearANSI } from './styles.mjs'
 import { stat, readFileSync, mkdir, writeFile, promises } from 'fs'
-import { fsWriteFile, gatherDynamicFolderContents } from "./utilities.mjs"
+import { fsWriteFile, gatherDynamicFolderContents, updatePrimaryStyleSheet } from "./utilities.mjs"
 import { setSourceAction, newFileAction, newFolderAction } from "./inquirerActions.mjs"
 import { navCommandObject as cmd } from "./config.mjs"
 import { answerMatch, statPromise, colorizeString } from "./utilities.mjs"
 
-var tempComponentName = null
+var tempComponentFilename = null
 var tempComponentContent = null
 var tempStylesheetContent = null
 var tempPrimaryStylesheetContent = null
 var tempStyledComponentType = null
+var tempComponentName = null
 
 function garbageCollectTempVars() {
-    tempComponentName = null
+    tempComponentFilename = null
     tempComponentContent = null
     tempStylesheetContent = null
     tempPrimaryStylesheetContent = null
     tempStyledComponentType = null
+    tempComponentName = null
 }
+
+function logTempVars() {
+    console.log('comp filename', tempComponentFilename)
+    console.log('comp content', tempComponentContent)
+    console.log('comp export name', tempComponentName)
+    console.log('stylesheet content', tempStylesheetContent)
+    console.log('primary stylesheet content', tempPrimaryStylesheetContent)
+    console.log('comp type', tempStyledComponentType)
+}
+
 export var pathArray = relativeDirectoryArray
 
 export function nav(commandArray = defaultCommands) {
@@ -45,9 +57,15 @@ export function nav(commandArray = defaultCommands) {
             console.log('Goodbye!')
         } else if (answerMatch(answers.contents, cmd.place)) {
             try {
-                fsWriteFile(`${pathArray.join('/')}/${tempComponentName}`, tempComponentContent)
+                logTempVars()
+                // Write new component
+                fsWriteFile(`${pathArray.join('/')}/${tempComponentFilename}`, tempComponentContent)
+
                 if (tempStylesheetContent !== null) {
-                    fsWriteFile(`${projectComponentStylesFolder.join('/')}/${tempStyledComponentType}s/${tempComponentName.split('.')[0]}.scss`, tempStylesheetContent)
+                    // Write new scss file
+                    fsWriteFile(`${projectComponentStylesFolder.join('/')}/${tempStyledComponentType}s/${tempComponentFilename.split('.')[0]}.scss`, tempStylesheetContent)
+
+                    // Write updated primary stylesheet
                     fsWriteFile(`${projectMainStylesheet.join('/')}`, tempPrimaryStylesheetContent)
                 }
             } catch (error) {
@@ -108,40 +126,14 @@ export function libraryNav(commandArray = defaultCommands) {
                             const relativeStyleSheet = result.filter(entry => entry.includes(selectedFileName))[0]
                             const primaryStyleSheet = readFileSync(`${projectMainStylesheet.join('/')}`).toString()
                             tempStylesheetContent = readFileSync(`${libraryStyleDirectory.join('/')}/${relativeStyleSheet}`, 'utf8')
-
-                            // REFACTOR
-                            let newStyleImport
-                            function updatePrimaryStyleSheet(componentType) {
-                                console.log(componentType)
-                                const replaceTag = `/* HAL ${componentType.toUpperCase()}S STYLESHEET TAG */`
-                                newStyleImport = `@import "./${componentType}s/${relativeStyleSheet.split('.')[0]}";`
-                                const newStringBlock = `${newStyleImport}\n${replaceTag}`
-                                const regexPattern = new RegExp(`\\/\\*\\s*HAL ${componentType.toUpperCase()}S STYLESHEET TAG\\s*\\*\\/`);
-
-                                // const replaceTagRegex = `/\/\*\s*HAL ${componentType}S STYLESHEET TAG\s*\*\//`
-                                // const tagRegex = new RegExp(replaceTagRegex)
-                                tempPrimaryStylesheetContent = primaryStyleSheet.replace(regexPattern, newStringBlock)
-
-                            }
-                            updatePrimaryStyleSheet(tempStyledComponentType)
-                            // if (tempStyledComponentType === 'component') {
-                            //     // const replaceTag = `/* HAL COMPONENTS STYLESHEET TAG */`
-                            //     // newStyleImport = `@import "./components/${relativeStyleSheet.split('.')[0]}";`
-                            //     // const newStringBlock = `${newStyleImport}\n${replaceTag}`
-                            //     tempPrimaryStylesheetContent = primaryStyleSheet.replace(/\/\*\s*HAL COMPONENTS STYLESHEET TAG\s*\*\//, newStringBlock)
-                            // } else if (tempStyledComponentType === 'view') {
-                            //     // const replaceTag = `/* HAL VIEWS STYLESHEET TAG */`
-                            //     // newStyleImport = `@import "./views/${relativeStyleSheet.split('.')[0]}";`
-                            //     // const newStringBlock = `${newStyleImport}\n${replaceTag}`
-                            //     tempPrimaryStylesheetContent = primaryStyleSheet.replace(/\/\*\s*HAL VIEWS STYLESHEET TAG\s*\*\//, newStringBlock)
-                            // }
-                            // END REFACTOR
-
+                            
                             try {
                                 inquirer.prompt(p.whatFilenamePrompt).then(answers => {
-                                    tempComponentName = answers.what_filename
+                                    tempComponentFilename = answers.what_filename
+                                    tempPrimaryStylesheetContent = updatePrimaryStyleSheet(primaryStyleSheet, tempComponentFilename, tempStyledComponentType)
                                     inquirer.prompt(p.whatComponentNamePrompt).then(answers => {
-                                        tempComponentContent = readFileSync(libraryPath.join('/'), 'utf8').replace(/!!NAME!!/g, answers.what_compname).toString()
+                                        tempComponentName = answers.what_compname 
+                                        tempComponentContent = readFileSync(libraryPath.join('/'), 'utf8').replace(/!!NAME!!/g, tempComponentName).toString()
                                         nav(placeComponentCommands)
                                     })
                                 })
@@ -151,15 +143,16 @@ export function libraryNav(commandArray = defaultCommands) {
 
                         })
 
-                    } else {
+                    } else { /* --------------- NO STYLESHEET COMPONENTS ---------------- */
                         try {
                             inquirer.prompt(p.whatFilenamePrompt).then(answers => {
-                                tempComponentName = answers.what_filename
+                                tempComponentFilename = answers.what_filename
                                 var regexPattern = '(^|[/\\\\])(' + directoriesWithNoExport.join('|') + ')([/\\\\]|$)';
                                 const noExportRegExp = new RegExp(regexPattern)
 
                                 if (libraryPath.join('/').match(noExportRegExp) === null) {
                                     inquirer.prompt(p.whatComponentNamePrompt).then(answers => {
+                                        tempComponentName = answers.what_compname
                                         tempComponentContent = readFileSync(libraryPath.join('/'), 'utf8').replace(/!!NAME!!/g, answers.what_compname).toString()
                                         nav(placeComponentCommands)
                                     })
@@ -185,3 +178,17 @@ export function libraryNav(commandArray = defaultCommands) {
 
     })
 }
+
+
+// if (tempStyledComponentType === 'component') {
+//     // const replaceTag = `/* HAL COMPONENTS STYLESHEET TAG */`
+//     // newStyleImport = `@import "./components/${relativeStyleSheet.split('.')[0]}";`
+//     // const newStringBlock = `${newStyleImport}\n${replaceTag}`
+//     tempPrimaryStylesheetContent = primaryStyleSheet.replace(/\/\*\s*HAL COMPONENTS STYLESHEET TAG\s*\*\//, newStringBlock)
+// } else if (tempStyledComponentType === 'view') {
+//     // const replaceTag = `/* HAL VIEWS STYLESHEET TAG */`
+//     // newStyleImport = `@import "./views/${relativeStyleSheet.split('.')[0]}";`
+//     // const newStringBlock = `${newStyleImport}\n${replaceTag}`
+//     tempPrimaryStylesheetContent = primaryStyleSheet.replace(/\/\*\s*HAL VIEWS STYLESHEET TAG\s*\*\//, newStringBlock)
+// }
+// END REFACTOR
