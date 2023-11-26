@@ -1,5 +1,4 @@
 import {
-    newFileFolderCommands,
     relativeDirectoryArray,
     libraryStyleDirectory,
     componentDirectory,
@@ -9,16 +8,14 @@ import {
     projectComponentStylesFolder,
     projectMainStylesheet,
     placeComponentCommands,
-    directoriesWithNoExport
+    navCommandObject as cmd
 } from "./config.mjs"
 import inquirer from "inquirer"
 import * as p from './prompts.js'
 import { clearANSI } from './styles.mjs'
-import { stat, readFileSync, mkdir, writeFile, promises } from 'fs'
-import { fsWriteFile, gatherDynamicFolderContents, updatePrimaryStyleSheet } from "./utilities.mjs"
+import { stat, readFileSync, promises } from 'fs'
 import { setSourceAction, newFileAction, newFolderAction } from "./inquirerActions.mjs"
-import { navCommandObject as cmd } from "./config.mjs"
-import { answerMatch, statPromise, colorizeString } from "./utilities.mjs"
+import { answerMatch, styledComponentRegex, noExportRegExp, updatePrimaryStyleSheet, fsWriteFile } from "./utilities.mjs"
 
 var tempComponentFilename = null
 var tempComponentContent = null
@@ -26,6 +23,13 @@ var tempStylesheetContent = null
 var tempPrimaryStylesheetContent = null
 var tempStyledComponentType = null
 var tempComponentName = null
+
+function componentExportName() {
+    inquirer.prompt(p.whatComponentNamePrompt).then(answers => {
+        tempComponentName = answers.what_compname
+        tempComponentContent = readFileSync(libraryPath.join('/'), 'utf8').replace(/!!NAME!!/g, tempComponentName).toString()
+    })
+}
 
 function garbageCollectTempVars() {
     tempComponentFilename = null
@@ -42,7 +46,7 @@ function logTempVars() {
     // console.log('comp export name', tempComponentName)
     // console.log('stylesheet content', tempStylesheetContent)
     // console.log('primary stylesheet content', tempPrimaryStylesheetContent)
-    console.log('comp type', tempStyledComponentType)
+    // console.log('comp type', tempStyledComponentType)
 }
 
 export var pathArray = relativeDirectoryArray
@@ -57,7 +61,7 @@ export function nav(commandArray = defaultCommands) {
             console.log('Goodbye!')
         } else if (answerMatch(answers.contents, cmd.place)) {
             try {
-                logTempVars()
+                // logTempVars()
 
                 // Write new component
                 fsWriteFile(`${pathArray.join('/')}/${tempComponentFilename}`, tempComponentContent)
@@ -101,6 +105,8 @@ export function nav(commandArray = defaultCommands) {
 
 const libraryPath = componentDirectory
 
+
+
 export function libraryNav(commandArray = defaultCommands) {
     inquirer.prompt(p.generateDynamicLibraryPrompt(fromLibraryCommands)).then(answers => {
         stat(`${libraryPath.join('/')}/${clearANSI(answers.selection)}`, (err, stats) => {
@@ -109,12 +115,7 @@ export function libraryNav(commandArray = defaultCommands) {
             } else {
                 if (stats.isFile()) {
                     libraryPath.push(clearANSI(answers.selection))
-                    var regexPattern = '(^|[/\\\\])(' + directoriesContainingStyleSheets.join('|') + ')([/\\\\]|$)';
-                    const styledComponentRegex = new RegExp(regexPattern)
-                    
-                    // else if ((clearANSI(answers.selection).includes('view'))) {
-                    //     tempStyledComponentType = 'view'
-                    // }
+
 
                     if (libraryPath.join('/').match(styledComponentRegex)) {
                         async function getStyleSheets() {
@@ -126,16 +127,13 @@ export function libraryNav(commandArray = defaultCommands) {
                             tempStylesheetContent = readFileSync(`${libraryStyleDirectory.join('/')}/${relativeStyleSheetFilename}`, 'utf8')
 
                             const primaryStyleSheetInitContent = readFileSync(`${projectMainStylesheet.join('/')}`).toString()
-                            
+
                             try {
                                 inquirer.prompt(p.whatFilenamePrompt).then(answers => {
                                     tempComponentFilename = answers.what_filename
                                     tempPrimaryStylesheetContent = updatePrimaryStyleSheet(primaryStyleSheetInitContent, tempComponentFilename, tempStyledComponentType)
-                                    inquirer.prompt(p.whatComponentNamePrompt).then(answers => {
-                                        tempComponentName = answers.what_compname 
-                                        tempComponentContent = readFileSync(libraryPath.join('/'), 'utf8').replace(/!!NAME!!/g, tempComponentName).toString()
-                                        nav(placeComponentCommands)
-                                    })
+                                    componentExportName()
+                                    nav(placeComponentCommands)
                                 })
                             } catch (err) {
                                 console.error('Error reading file:', err)
@@ -147,15 +145,10 @@ export function libraryNav(commandArray = defaultCommands) {
                         try {
                             inquirer.prompt(p.whatFilenamePrompt).then(answers => {
                                 tempComponentFilename = answers.what_filename
-                                var regexPattern = '(^|[/\\\\])(' + directoriesWithNoExport.join('|') + ')([/\\\\]|$)';
-                                const noExportRegExp = new RegExp(regexPattern)
 
-                                if (libraryPath.join('/').match(noExportRegExp) === null) {
-                                    inquirer.prompt(p.whatComponentNamePrompt).then(answers => {
-                                        tempComponentName = answers.what_compname
-                                        tempComponentContent = readFileSync(libraryPath.join('/'), 'utf8').replace(/!!NAME!!/g, answers.what_compname).toString()
-                                        nav(placeComponentCommands)
-                                    })
+                                if (libraryPath.join('/').match(noExportRegExp) === null) { // HAS an export!
+                                    componentExportName()
+                                    nav(placeComponentCommands)
                                 } else {
                                     tempComponentContent = readFileSync(libraryPath.join('/'), 'utf8').toString()
                                     nav(placeComponentCommands)
@@ -166,14 +159,11 @@ export function libraryNav(commandArray = defaultCommands) {
                         }
                     }
 
-
                 } else if (stats.isDirectory()) {
-                    libraryPath.push(clearANSI(answers.selection))
-                    console.log(directoriesContainingStyleSheets, answers.selection)
                     if (directoriesContainingStyleSheets.includes(clearANSI(answers.selection))) {
-                        console.log('test!')
                         tempStyledComponentType = clearANSI(answers.selection)
-                    } 
+                    }
+                    libraryPath.push(clearANSI(answers.selection))
                     libraryNav(commandArray)
                 } else {
                     console.log('The selection is neither a file nor a folder.')
@@ -183,17 +173,3 @@ export function libraryNav(commandArray = defaultCommands) {
 
     })
 }
-
-
-// if (tempStyledComponentType === 'component') {
-//     // const replaceTag = `/* HAL COMPONENTS STYLESHEET TAG */`
-//     // newStyleImport = `@import "./components/${relativeStyleSheet.split('.')[0]}";`
-//     // const newStringBlock = `${newStyleImport}\n${replaceTag}`
-//     tempPrimaryStylesheetContent = primaryStyleSheet.replace(/\/\*\s*HAL COMPONENTS STYLESHEET TAG\s*\*\//, newStringBlock)
-// } else if (tempStyledComponentType === 'view') {
-//     // const replaceTag = `/* HAL VIEWS STYLESHEET TAG */`
-//     // newStyleImport = `@import "./views/${relativeStyleSheet.split('.')[0]}";`
-//     // const newStringBlock = `${newStyleImport}\n${replaceTag}`
-//     tempPrimaryStylesheetContent = primaryStyleSheet.replace(/\/\*\s*HAL VIEWS STYLESHEET TAG\s*\*\//, newStringBlock)
-// }
-// END REFACTOR

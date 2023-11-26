@@ -3,6 +3,7 @@ import util from 'util'
 import inquirer from 'inquirer'
 import { clearANSI, styled } from './styles.mjs'
 import { writeFile } from 'fs'
+import { directoriesContainingStyleSheets, directoriesWithNoExport } from './config.mjs'
 
 export const statPromise = util.promisify(stat)
 
@@ -62,3 +63,6 @@ export function updatePrimaryStyleSheet(primaryStyleSheet, componentFilename, co
     const regexPattern = new RegExp(`\\/\\*\\s*HAL ${componentType.toUpperCase()} STYLESHEET TAG\\s*\\*\\/`);
     return primaryStyleSheet.replace(regexPattern, newStringBlock)
 }
+
+export const styledComponentRegex = new RegExp('(^|[/\\\\])(' + directoriesContainingStyleSheets.join('|') + ')([/\\\\]|$)')
+export const noExportRegExp = new RegExp('(^|[/\\\\])(' + directoriesWithNoExport.join('|') + ')([/\\\\]|$)')

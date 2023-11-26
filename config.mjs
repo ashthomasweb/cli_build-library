@@ -12,6 +12,7 @@ export const directoriesWithNoExport = ['servers']
 export const projectComponentStylesFolder = [...relativeDirectoryArray, 'newTestFolder', 'scss'] // NEEDS to be set to best practice structure along with proper relativeDirectory
 export const projectMainStylesheet = [...relativeDirectoryArray, 'newTestFolder', 'scss', 'styles.scss'] // NEEDS to be set to best practice structure along with proper relativeDirectory
 
+
 export const mainMenuChoices = {
     copyFrom: `${styled('Copy', 'yellow')} From Reuseable Component Library`,
     explore: `${styled('Explore', 'yellow')} Starting From /src/`,
