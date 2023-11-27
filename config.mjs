@@ -1,5 +1,12 @@
 import { styled } from "./styles.mjs"
 
+/*
+-- Config file needs attention. Script needs to be run upon install, pointing the relative directory at the current project.
+-- Hard-coded library route needs to be able to be set by user.
+-- Hard-coded project route needs to be able to be set by user.
+-- Component directory is currently being passed to libraryNav(), and not able to be reset during recursive operation. Disallowing continuous operations after component is copied.
+*/
+
 export const relativeDirectoryArray = [`c:`, `Users`, `rideo`, `Dropbox`, 'Code', 'projects', 'cli', `initial-test`] // NEEDS to be set on install to local folder
 export const componentDirectory = [...relativeDirectoryArray, 'componentLibrary', 'library'] // NEEDS to reference /installedFolder/node_modules/hal/library
 export const halRootDirectory = 'c:/Users/rideo/Dropbox/Code/projects/cli/initial-test' // Currently not in use - referenced in setSourceAction()
@@ -9,15 +16,15 @@ export const userRootDirectory = 'c:/Users/rideo/Dropbox/Code/projects/cli/hal-t
 export const libraryStyleDirectory = [...relativeDirectoryArray, 'componentLibrary', 'stylesheets'] // 'Library' folder needs structure and better naming convention
 export const directoriesContainingStyleSheets = ['components', 'views']
 export const directoriesWithNoExport = ['servers', 'build']
-export const projectComponentStylesFolder = [...relativeDirectoryArray, 'aNewTestFolder', 'scss'] // NEEDS to be set to best practice structure along with proper relativeDirectory
-export const projectMainStylesheet = [...relativeDirectoryArray, 'aNewTestFolder', 'scss', 'styles.scss'] // NEEDS to be set to best practice structure along with proper relativeDirectory
+export const projectComponentStylesFolder = [...relativeDirectoryArray, 'aNewTestFolder', 'scss'] // NEEDS to be set to best practice structure along with proper relativeDirectory and not hard-coded
+export const projectMainStylesheet = [...relativeDirectoryArray, 'aNewTestFolder', 'scss', 'styles.scss'] // NEEDS to be set to best practice structure along with proper relativeDirectory and not hard-coded
 
 export const mainMenuChoices = {
     copyFrom: `${styled('Copy', 'yellow')} From Reuseable Component Library`,
     explore: `${styled('Explore', 'yellow')} Starting From /src/`,
     createNew: `${styled('Create', 'yellow')} New Blank File or Folder`,
     help: `Display Help Docs`,
-    settings: `User Settings`   
+    settings: `User Settings`
 }
 
 export const navCommandObject = {

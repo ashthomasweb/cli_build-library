@@ -9,7 +9,7 @@ import {
     projectMainStylesheet,
     placeComponentCommands,
     navCommandObject as cmd
-} from "./config.mjs"
+} from "./config.mjs" // COULD BE BROUGHT IN CLEANER AFTER CONFIG IS FULLY OPERATIONAL
 import inquirer from "inquirer"
 import * as p from './prompts.js'
 import { clearANSI } from './styles.mjs'
@@ -25,6 +25,17 @@ var tempStyledComponentType = null
 var tempComponentName = null
 var hasExport = false
 var hasStylesheet = false
+
+function garbageCollectTempVars() {
+    tempComponentFilename = null
+    tempComponentContent = null
+    tempStylesheetContent = null
+    tempPrimaryStylesheetContent = null
+    tempStyledComponentType = null
+    tempComponentName = null
+    hasExport = false
+    hasStylesheet = false
+}
 
 function handleNamingUpdatingAndNav(primaryStyleSheetInitContent = null) {
     try {
@@ -51,17 +62,6 @@ function handleNamingUpdatingAndNav(primaryStyleSheetInitContent = null) {
     }
 }
 
-function garbageCollectTempVars() {
-    tempComponentFilename = null
-    tempComponentContent = null
-    tempStylesheetContent = null
-    tempPrimaryStylesheetContent = null
-    tempStyledComponentType = null
-    tempComponentName = null
-    hasExport = false
-    hasStylesheet = false
-}
-
 export var pathArray = relativeDirectoryArray
 
 export function nav(commandArray = defaultCommands) {
@@ -75,20 +75,18 @@ export function nav(commandArray = defaultCommands) {
         } else if (answerMatch(answers.contents, cmd.place)) {
             try {
                 fsWriteFile(`${pathArray.join('/')}/${tempComponentFilename}`, tempComponentContent) // Write new component
-
                 if (tempStylesheetContent !== null) {
                     fsWriteFile(`${projectComponentStylesFolder.join('/')}/${tempStyledComponentType}/${tempComponentFilename.split('.')[0]}.scss`, tempStylesheetContent) // Write new scss file
                     fsWriteFile(`${projectMainStylesheet.join('/')}`, tempPrimaryStylesheetContent) // Write updated primary stylesheet
                 }
-
             } catch (error) {
                 console.log('Something went wrong!', error)
             } finally {
                 garbageCollectTempVars()
             }
-            setTimeout(() => {
-                libraryNav()
-            }, 1500)
+            // setTimeout(() => { // NOT WORKING HACK TO ENABLE CONTINUOUS NAV OPERATIONS
+            //     libraryNav()
+            // }, 1500)
         } else if (answerMatch(answers.contents, cmd.setSRC)) {
             setSourceAction()
         } else if (answerMatch(answers.contents, cmd.newFile)) {
@@ -101,7 +99,7 @@ export function nav(commandArray = defaultCommands) {
                     console.error('Error getting file/folder information:', err)
                 } else {
                     if (stats.isFile()) {
-                        console.log('No action available')
+                        console.log('No action available') // THIS IS A USELESS ENDPOINT FOR THE USER
                     } else if (stats.isDirectory()) {
                         pathArray.push(clearANSI(answers.contents))
                         nav(commandArray)
@@ -114,21 +112,20 @@ export function nav(commandArray = defaultCommands) {
     })
 }
 
-const libraryPath = componentDirectory
+const libraryPath = componentDirectory // THIS IS WHERE THE ISSUE LIES FOR CONTINUOUS NAV OPERATIONS
 
 export function libraryNav(commandArray = defaultCommands) {
-    console.log('lib nav')
-    logTempVars()
     inquirer.prompt(p.generateDynamicLibraryPrompt(fromLibraryCommands)).then(answers => {
         stat(`${libraryPath.join('/')}/${clearANSI(answers.selection)}`, (err, stats) => {
             if (err) {
                 console.error('Error getting file/folder information:', err)
             } else {
-                if (stats.isFile()) {
+                if (stats.isFile()) { // HANDLES FILE SELECTION
                     libraryPath.push(clearANSI(answers.selection))
                     libraryPath.join('/').match(noExportRegExp) === null && (hasExport = true)
 
-                    if (libraryPath.join('/').match(styledComponentRegex)) { /* --------------- HAS STYLESHEET COMPONENTS ---------------- */
+                    if (libraryPath.join('/').match(styledComponentRegex)) {
+                        /* --------------- HAS STYLESHEET COMPONENTS ---------------- */
                         hasStylesheet = true
 
                         async function getStyleSheets() {
@@ -142,11 +139,12 @@ export function libraryNav(commandArray = defaultCommands) {
                             handleNamingUpdatingAndNav(primaryStyleSheetInitContent)
                         })
 
-                    } else { /* --------------- NO STYLESHEET COMPONENTS ---------------- */
+                    } else {
+                        /* --------------- NO STYLESHEET COMPONENTS ---------------- */
                         handleNamingUpdatingAndNav()
                     }
 
-                } else if (stats.isDirectory()) {
+                } else if (stats.isDirectory()) { // HANDLES DIRECTORY SELECTION
                     if (directoriesContainingStyleSheets.includes(clearANSI(answers.selection))) {
                         tempStyledComponentType = clearANSI(answers.selection)
                     }
@@ -163,11 +161,11 @@ export function libraryNav(commandArray = defaultCommands) {
 
 /* DEV FUNCTIONS */
 
-function logTempVars() {
-    console.log('comp filename', tempComponentFilename)
-    console.log('comp content', tempComponentContent)
-    console.log('comp export name', tempComponentName)
-    console.log('stylesheet content', tempStylesheetContent)
-    console.log('primary stylesheet content', tempPrimaryStylesheetContent)
-    console.log('comp type', tempStyledComponentType)
-}
+// function logTempVars() {
+//     console.log('comp filename', tempComponentFilename)
+//     console.log('comp content', tempComponentContent)
+//     console.log('comp export name', tempComponentName)
+//     console.log('stylesheet content', tempStylesheetContent)
+//     console.log('primary stylesheet content', tempPrimaryStylesheetContent)
+//     console.log('comp type', tempStyledComponentType)
+// }

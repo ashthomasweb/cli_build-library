@@ -5,28 +5,35 @@ import { clearANSI, styled } from './styles.mjs'
 import { writeFile } from 'fs'
 import { directoriesContainingStyleSheets, directoriesWithNoExport } from './config.mjs'
 
-export const statPromise = util.promisify(stat)
+const statPromise = util.promisify(stat)
 
 export function colorizeString(input, isDirectory) {
     return isDirectory ? styled(styled(`${input}`, 'bold'), 'cyan') : styled(input, 'green')
 }
 
-export async function gatherDynamicFolderContents(inputDirectory, commandOptions) {
-    try {
-        const files = await promises.readdir(inputDirectory)
-        const taggedFiles = await Promise.all(
-            files.map(async (entry) => {
-                const fullPath = `${inputDirectory}/${entry}`
-                const stats = await statPromise(fullPath)
-                const isDirectory = stats.isDirectory()
-                const styledEntry = colorizeString(entry, isDirectory)
-                return styledEntry
-            })
-        )
+export function answerMatch(answer, command) {
+    return clearANSI(answer) === command
+}
 
+export const styledComponentRegex = new RegExp(`(^|[/\\\\])(${directoriesContainingStyleSheets.join('|')})([/\\\\]|$)`)
+
+export const noExportRegExp = new RegExp(`(^|[/\\\\])(${directoriesWithNoExport.join('|')})([/\\\\]|$)`)
+
+export async function gatherDynamicFolderContents(inputDirectory, commandOptions) {
+    
+    try {
         const styledCommands = commandOptions.map(entry => (
             styled(styled(entry, 'italics'), 'yellow')
         ))
+
+        const files = await promises.readdir(inputDirectory)
+        const taggedFiles = await Promise.all(
+            files.map(async (entry) => {
+                const stats = await statPromise(`${inputDirectory}/${entry}`)
+                const isDirectory = stats.isDirectory()
+                return colorizeString(entry, isDirectory)
+            })
+        )
 
         return [
             new inquirer.Separator(),
@@ -51,18 +58,10 @@ export function fsWriteFile(path, newContent) {
     })
 }
 
-export function answerMatch(answer, command) {
-    return clearANSI(answer) === command
-}
-
 export function updatePrimaryStyleSheet(primaryStyleSheet, componentFilename, componentType) {
-    let newStyleImport
     const replaceTag = `/* HAL ${componentType.toUpperCase()} STYLESHEET TAG */`
-    newStyleImport = `@import "./${componentType}/${componentFilename.split('.')[0]}";`
-    const newStringBlock = `${newStyleImport}\n${replaceTag}`
+    const newStyleImport = `@import "./${componentType}/${componentFilename.split('.')[0]}";`
+    const newImportAndTag = `${newStyleImport}\n${replaceTag}`
     const regexPattern = new RegExp(`\\/\\*\\s*HAL ${componentType.toUpperCase()} STYLESHEET TAG\\s*\\*\\/`);
-    return primaryStyleSheet.replace(regexPattern, newStringBlock)
+    return primaryStyleSheet.replace(regexPattern, newImportAndTag)
 }
-
-export const styledComponentRegex = new RegExp('(^|[/\\\\])(' + directoriesContainingStyleSheets.join('|') + ')([/\\\\]|$)')
-export const noExportRegExp = new RegExp('(^|[/\\\\])(' + directoriesWithNoExport.join('|') + ')([/\\\\]|$)')

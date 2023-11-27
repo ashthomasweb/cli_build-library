@@ -1,13 +1,17 @@
-
 export function styled(input, style) {
-    const matchingStyle = ANSICodes.find(code => code.name === style);
-    const closeTag = '\x1b[0m';
+    const matchingStyle = ANSICodes.find(code => code.name === style)
+    const closeTag = '\x1b[0m'
 
     if (matchingStyle) {
-        return `${matchingStyle.code}${input}${closeTag}`;
+        return `${matchingStyle.code}${input}${closeTag}`
     } else {
-        return input;
+        return input
     }
+}
+
+export function clearANSI(input) {
+    const ansiRegex = /\x1b\[[0-9;]*m/g
+    return input.replace(ansiRegex, '')
 }
 
 export const ANSICodes = [
@@ -43,9 +47,4 @@ export const ANSICodes = [
         name: 'close',
         code: '\x1b[0m'
     }
-];
-
-export function clearANSI(input) {
-    const ansiRegex = /\x1b\[[0-9;]*m/g
-    return input.replace(ansiRegex, '')
-}
+]

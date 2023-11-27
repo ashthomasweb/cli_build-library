@@ -11,21 +11,9 @@ export function settingsAction() {
     inquirer.prompt(p.settingsPrompt).then(answers => {
         if (answers.settings === 'Set /src folder') {
             nav(settingsCommands)
-
         } else if (answers.settings === 'Reset /src folder') {
             console.log('Feature Coming Soon!')
         }
-    })
-}
-
-export function setSourceAction() {
-    inquirer.prompt(p.srcFolderPrompt).then(answers => { // NEED: refactor to not ask for directory
-        const data = readFileSync(`${halRootDirectory}/config.js`, 'utf8')
-        const userVarReplace = `export const userRootDirectory = '${userRootDirectory}'`
-        const varPrefix = 'export const userRootDirectory ='
-        const regex = new RegExp(userVarReplace, 'g')
-        const newContent = data.replace(regex, `${varPrefix} '${answers.src_folder}'`).toString()
-        fsWriteFile(`${halRootDirectory}/config.js`, newContent)
     })
 }
 
@@ -55,5 +43,16 @@ export function newFolderAction(path) {
                 nav(newFileFolderCommands)
             }
         })
+    })
+}
+
+export function setSourceAction() { // CURRENTLY NOT IN USE
+    inquirer.prompt(p.srcFolderPrompt).then(answers => {
+        const data = readFileSync(`${halRootDirectory}/config.js`, 'utf8')
+        const userVarReplace = `export const userRootDirectory = '${userRootDirectory}'`
+        const varPrefix = 'export const userRootDirectory ='
+        const regex = new RegExp(userVarReplace, 'g')
+        const newContent = data.replace(regex, `${varPrefix} '${answers.src_folder}'`).toString()
+        fsWriteFile(`${halRootDirectory}/config.js`, newContent)
     })
 }
