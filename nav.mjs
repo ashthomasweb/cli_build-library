@@ -23,12 +23,32 @@ var tempStylesheetContent = null
 var tempPrimaryStylesheetContent = null
 var tempStyledComponentType = null
 var tempComponentName = null
+var hasExport = false
+var hasStylesheet = false
 
-function componentExportName() {
-    inquirer.prompt(p.whatComponentNamePrompt).then(answers => {
-        tempComponentName = answers.what_compname
-        tempComponentContent = readFileSync(libraryPath.join('/'), 'utf8').replace(/!!NAME!!/g, tempComponentName).toString()
-    })
+function handleNamingUpdatingAndNav(primaryStyleSheetInitContent = null) {
+    try {
+        inquirer.prompt(p.whatFilenamePrompt).then(answers => {
+            tempComponentFilename = answers.what_filename
+            hasStylesheet && (tempPrimaryStylesheetContent = updatePrimaryStyleSheet(primaryStyleSheetInitContent, tempComponentFilename, tempStyledComponentType))
+
+            if (hasExport) {
+                inquirer.prompt(p.whatComponentNamePrompt).then(answers => {
+                    tempComponentName = answers.what_compname
+                    tempComponentContent = readFileSync(libraryPath.join('/'), 'utf8')
+                    hasExport && (tempComponentContent = tempComponentContent.replace(/!!NAME!!/g, tempComponentName).toString())
+                }).finally(() => {
+                    nav(placeComponentCommands)
+                })
+            } else if (!hasExport) {
+                tempComponentContent = readFileSync(libraryPath.join('/'), 'utf8')
+                nav(placeComponentCommands)
+            }
+
+        })
+    } catch (err) {
+        console.error('Error reading file:', err)
+    }
 }
 
 function garbageCollectTempVars() {
@@ -38,15 +58,8 @@ function garbageCollectTempVars() {
     tempPrimaryStylesheetContent = null
     tempStyledComponentType = null
     tempComponentName = null
-}
-
-function logTempVars() {
-    // console.log('comp filename', tempComponentFilename)
-    // console.log('comp content', tempComponentContent)
-    // console.log('comp export name', tempComponentName)
-    // console.log('stylesheet content', tempStylesheetContent)
-    // console.log('primary stylesheet content', tempPrimaryStylesheetContent)
-    // console.log('comp type', tempStyledComponentType)
+    hasExport = false
+    hasStylesheet = false
 }
 
 export var pathArray = relativeDirectoryArray
@@ -61,23 +74,21 @@ export function nav(commandArray = defaultCommands) {
             console.log('Goodbye!')
         } else if (answerMatch(answers.contents, cmd.place)) {
             try {
-                // logTempVars()
-
-                // Write new component
-                fsWriteFile(`${pathArray.join('/')}/${tempComponentFilename}`, tempComponentContent)
+                fsWriteFile(`${pathArray.join('/')}/${tempComponentFilename}`, tempComponentContent) // Write new component
 
                 if (tempStylesheetContent !== null) {
-                    // Write new scss file
-                    fsWriteFile(`${projectComponentStylesFolder.join('/')}/${tempStyledComponentType}/${tempComponentFilename.split('.')[0]}.scss`, tempStylesheetContent)
-
-                    // Write updated primary stylesheet
-                    fsWriteFile(`${projectMainStylesheet.join('/')}`, tempPrimaryStylesheetContent)
+                    fsWriteFile(`${projectComponentStylesFolder.join('/')}/${tempStyledComponentType}/${tempComponentFilename.split('.')[0]}.scss`, tempStylesheetContent) // Write new scss file
+                    fsWriteFile(`${projectMainStylesheet.join('/')}`, tempPrimaryStylesheetContent) // Write updated primary stylesheet
                 }
+
             } catch (error) {
                 console.log('Something went wrong!', error)
+            } finally {
                 garbageCollectTempVars()
             }
-            garbageCollectTempVars()
+            setTimeout(() => {
+                libraryNav()
+            }, 1500)
         } else if (answerMatch(answers.contents, cmd.setSRC)) {
             setSourceAction()
         } else if (answerMatch(answers.contents, cmd.newFile)) {
@@ -105,9 +116,9 @@ export function nav(commandArray = defaultCommands) {
 
 const libraryPath = componentDirectory
 
-
-
 export function libraryNav(commandArray = defaultCommands) {
+    console.log('lib nav')
+    logTempVars()
     inquirer.prompt(p.generateDynamicLibraryPrompt(fromLibraryCommands)).then(answers => {
         stat(`${libraryPath.join('/')}/${clearANSI(answers.selection)}`, (err, stats) => {
             if (err) {
@@ -115,9 +126,11 @@ export function libraryNav(commandArray = defaultCommands) {
             } else {
                 if (stats.isFile()) {
                     libraryPath.push(clearANSI(answers.selection))
+                    libraryPath.join('/').match(noExportRegExp) === null && (hasExport = true)
 
+                    if (libraryPath.join('/').match(styledComponentRegex)) { /* --------------- HAS STYLESHEET COMPONENTS ---------------- */
+                        hasStylesheet = true
 
-                    if (libraryPath.join('/').match(styledComponentRegex)) {
                         async function getStyleSheets() {
                             const styleFiles = await promises.readdir(libraryStyleDirectory.join('/'))
                             return styleFiles
@@ -125,38 +138,12 @@ export function libraryNav(commandArray = defaultCommands) {
                         getStyleSheets().then(result => {
                             const relativeStyleSheetFilename = result.filter(entry => entry.includes(clearANSI(answers.selection.split('.')[0])))[0]
                             tempStylesheetContent = readFileSync(`${libraryStyleDirectory.join('/')}/${relativeStyleSheetFilename}`, 'utf8')
-
                             const primaryStyleSheetInitContent = readFileSync(`${projectMainStylesheet.join('/')}`).toString()
-
-                            try {
-                                inquirer.prompt(p.whatFilenamePrompt).then(answers => {
-                                    tempComponentFilename = answers.what_filename
-                                    tempPrimaryStylesheetContent = updatePrimaryStyleSheet(primaryStyleSheetInitContent, tempComponentFilename, tempStyledComponentType)
-                                    componentExportName()
-                                    nav(placeComponentCommands)
-                                })
-                            } catch (err) {
-                                console.error('Error reading file:', err)
-                            }
-
+                            handleNamingUpdatingAndNav(primaryStyleSheetInitContent)
                         })
 
                     } else { /* --------------- NO STYLESHEET COMPONENTS ---------------- */
-                        try {
-                            inquirer.prompt(p.whatFilenamePrompt).then(answers => {
-                                tempComponentFilename = answers.what_filename
-
-                                if (libraryPath.join('/').match(noExportRegExp) === null) { // HAS an export!
-                                    componentExportName()
-                                    nav(placeComponentCommands)
-                                } else {
-                                    tempComponentContent = readFileSync(libraryPath.join('/'), 'utf8').toString()
-                                    nav(placeComponentCommands)
-                                }
-                            })
-                        } catch (err) {
-                            console.error('Error reading file:', err)
-                        }
+                        handleNamingUpdatingAndNav()
                     }
 
                 } else if (stats.isDirectory()) {
@@ -172,4 +159,15 @@ export function libraryNav(commandArray = defaultCommands) {
         })
 
     })
+}
+
+/* DEV FUNCTIONS */
+
+function logTempVars() {
+    console.log('comp filename', tempComponentFilename)
+    console.log('comp content', tempComponentContent)
+    console.log('comp export name', tempComponentName)
+    console.log('stylesheet content', tempStylesheetContent)
+    console.log('primary stylesheet content', tempPrimaryStylesheetContent)
+    console.log('comp type', tempStyledComponentType)
 }

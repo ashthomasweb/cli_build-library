@@ -8,10 +8,9 @@ export const userRootDirectory = 'c:/Users/rideo/Dropbox/Code/projects/cli/hal-t
 /* Used in prompts for lookups */
 export const libraryStyleDirectory = [...relativeDirectoryArray, 'componentLibrary', 'stylesheets'] // 'Library' folder needs structure and better naming convention
 export const directoriesContainingStyleSheets = ['components', 'views']
-export const directoriesWithNoExport = ['servers']
-export const projectComponentStylesFolder = [...relativeDirectoryArray, 'newTestFolder', 'scss'] // NEEDS to be set to best practice structure along with proper relativeDirectory
-export const projectMainStylesheet = [...relativeDirectoryArray, 'newTestFolder', 'scss', 'styles.scss'] // NEEDS to be set to best practice structure along with proper relativeDirectory
-
+export const directoriesWithNoExport = ['servers', 'build']
+export const projectComponentStylesFolder = [...relativeDirectoryArray, 'aNewTestFolder', 'scss'] // NEEDS to be set to best practice structure along with proper relativeDirectory
+export const projectMainStylesheet = [...relativeDirectoryArray, 'aNewTestFolder', 'scss', 'styles.scss'] // NEEDS to be set to best practice structure along with proper relativeDirectory
 
 export const mainMenuChoices = {
     copyFrom: `${styled('Copy', 'yellow')} From Reuseable Component Library`,
