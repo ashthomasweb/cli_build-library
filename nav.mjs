@@ -2,6 +2,7 @@ import {
     relativeDirectoryArray,
     libraryStyleDirectory,
     componentDirectory,
+    bundlesDirectory,
     defaultCommands,
     fromLibraryCommands,
     directoriesContainingStyleSheets,
@@ -14,7 +15,7 @@ import inquirer from "inquirer"
 import * as p from './prompts.js'
 import { clearANSI } from './styles.mjs'
 import { stat, readFileSync, promises } from 'fs'
-import { setSourceAction, newFileAction, newFolderAction, newBuildAtLocation } from "./inquirerActions.mjs"
+import { setSourceAction, newFileAction, newFolderAction } from "./inquirerActions.mjs"
 import { answerMatch, styledComponentRegex, noExportRegExp, updatePrimaryStyleSheet, fsWriteFile } from "./utilities.mjs"
 
 var tempComponentFilename = null
@@ -158,6 +159,20 @@ export function libraryNav(commandArray = defaultCommands) {
             }
         })
 
+    })
+}
+
+const bundlePath = bundlesDirectory
+
+export function bundleNav(commandArray = defaultCommands, startingLocation) {
+    inquirer.prompt(p.generateDynamicBundlePrompt(commandArray, startingLocation)).then(answers => {
+        stat(`${bundlePath.join('/')}/${startingLocation.join('/')}/${clearANSI(answers.selection)}`, (err, stats) => {
+            if (err) {
+                console.error('Error getting file/folder information:', err)
+            } else {
+                console.log(bundlePath, startingLocation, answers.selection)      
+            }
+        })
     })
 }
 

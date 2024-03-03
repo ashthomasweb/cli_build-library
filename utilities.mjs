@@ -2,7 +2,7 @@ import { promises, stat } from 'fs'
 import util from 'util'
 import inquirer from 'inquirer'
 import { clearANSI, styled } from './styles.mjs'
-import { writeFile } from 'fs'
+import { writeFile, cp } from 'fs'
 import { directoriesContainingStyleSheets, directoriesWithNoExport } from './config.mjs'
 
 const statPromise = util.promisify(stat)
@@ -56,6 +56,14 @@ export function fsWriteFile(path, newContent) {
             console.log(`${styled(styled(`File content changed successfully!`, 'green'), 'italics')}\n${path}`)
         }
     })
+}
+
+export function writeNewBundle(pathArray, options) {
+    cp(source, pathArray.join('/'), { recursive: true }, (err) => {
+        if (err) {
+          console.error(err);
+        }
+      })
 }
 
 export function updatePrimaryStyleSheet(primaryStyleSheet, componentFilename, componentType) {

@@ -1,4 +1,5 @@
 import {
+    bundlesDirectory,
     componentDirectory,
     defaultCommands,
 } from './config.mjs'
@@ -55,14 +56,14 @@ export const newBuildPrompt = [{
     type: 'list',
     name: 'language',
     message: 'For What Language?',
-    choices: ['React', 'Vue (Not Avail)', 'Ruby (Not Avail)']
+    choices: ['React', 'Vue', 'Ruby']
 }]
 
 export const reactBuilds = [{
     type: 'list',
     name: 'reactBuilds',
     message: 'Which Build Pack?',
-    choices: ['Parcel 2', 'Vite', 'Webpack']
+    choices: ['Parcel', 'Vite', 'Webpack']
 }]
 
 export const vueBuilds = [{
@@ -90,6 +91,18 @@ export function generateDynamicLibraryPrompt(commandArray = defaultCommands) {
         name: 'selection',
         message: 'Navigation',
         choices: () => gatherDynamicFolderContents(componentDirectory.join('/'), commandArray),
+        pageSize: 25,
+        default: commandArray.length
+    }]
+    return dynamicFolderPrompt
+}
+
+export function generateDynamicBundlePrompt(commandArray = defaultCommands, startingLocation) {
+    const dynamicFolderPrompt = [{
+        type: 'list',
+        name: 'selection',
+        message: 'Navigation',
+        choices: () => gatherDynamicFolderContents(`${bundlesDirectory.join('/')}/${startingLocation.join('/')}`, commandArray),
         pageSize: 25,
         default: commandArray.length
     }]
