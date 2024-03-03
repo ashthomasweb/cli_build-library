@@ -7,7 +7,7 @@ import { readFileSync, writeFile, mkdir } from "fs"
 import { halRootDirectory, userRootDirectory } from "./config.mjs"
 import { newFileFolderCommands } from "./config.mjs"
 
-export function settingsAction() {
+export function settingsActions() {
     inquirer.prompt(p.settingsPrompt).then(answers => {
         if (answers.settings === 'Set /src folder') {
             nav(settingsCommands)
@@ -15,6 +15,28 @@ export function settingsAction() {
             console.log('Feature Coming Soon!')
         }
     })
+}
+
+export function newBuildActions() {
+    inquirer.prompt(p.newBuildPrompt).then(answers => {
+        if (answers.builds === 'React') {
+            inquirer.prompt(p.reactBuilds).then(answers => {
+                reactBuilds(answers)
+            })
+        } else if (answers.builds === 'Vue (Not Avail)') {
+            inquirer.prompt(p.vueBuilds).then(answers => {
+                vueBuilds(answers)
+            })
+        }
+    })
+}
+
+export function reactBuilds(answers) {
+    console.log(answers.reactBuilds)
+}
+
+export function vueBuilds(answers) {
+    console.log(answers.vueBuilds)
 }
 
 export function newFileAction(path) {

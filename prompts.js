@@ -12,6 +12,7 @@ export const mainMenuPrompt = [{
     message: 'Welcome! What would you like to do?',
     choices: [
         mmc.copyFrom,
+        mmc.build,
         mmc.explore,
         mmc.createNew,
         mmc.help,
@@ -48,6 +49,27 @@ export const settingsPrompt = [{
     name: 'settings',
     message: 'User configurable settings',
     choices: ['Set /src folder', 'Reset /src folder', 'Set style sheet options']
+}]
+
+export const newBuildPrompt = [{
+    type: 'list',
+    name: 'builds',
+    message: 'For What Language?',
+    choices: ['React', 'Vue (Not Avail)', 'Ruby (Not Avail)']
+}]
+
+export const reactBuilds = [{
+    type: 'list',
+    name: 'reactBuilds',
+    message: 'Which Build Pack?',
+    choices: ['Parcel 2', 'Vite', 'Webpack']
+}]
+
+export const vueBuilds = [{
+    type: 'list',
+    name: 'vueBuilds',
+    message: 'Which Build Pack?',
+    choices: ['Unknown']
 }]
 
 export function generateDynamicPrompt(commandArray = defaultCommands) {
