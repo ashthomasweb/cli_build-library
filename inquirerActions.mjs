@@ -6,6 +6,7 @@ import { fsWriteFile } from "./utilities.mjs"
 import { readFileSync, writeFile, mkdir } from "fs"
 import { halRootDirectory, userRootDirectory } from "./config.mjs"
 import { newFileFolderCommands } from "./config.mjs"
+import { build } from "vite"
 
 export function settingsActions() {
     inquirer.prompt(p.settingsPrompt).then(answers => {
@@ -18,25 +19,26 @@ export function settingsActions() {
 }
 
 export function newBuildActions() {
+    let language
+    let build
     inquirer.prompt(p.newBuildPrompt).then(answers => {
-        if (answers.builds === 'React') {
+        language = answers.language
+        if (answers.language === 'React') {
             inquirer.prompt(p.reactBuilds).then(answers => {
-                reactBuilds(answers)
+                build = answers.reactBuilds
+                buildChooser(language, build)
             })
-        } else if (answers.builds === 'Vue (Not Avail)') {
+        } else if (answers.language === 'Vue (Not Avail)') {
             inquirer.prompt(p.vueBuilds).then(answers => {
-                vueBuilds(answers)
+                build = answers.vueBuilds
+                buildChooser(language, build)
             })
         }
     })
 }
 
-export function reactBuilds(answers) {
-    console.log(answers.reactBuilds)
-}
-
-export function vueBuilds(answers) {
-    console.log(answers.vueBuilds)
+export function buildChooser(language, build) {
+    console.log(language, build)
 }
 
 export function newFileAction(path) {

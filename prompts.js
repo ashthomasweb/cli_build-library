@@ -53,7 +53,7 @@ export const settingsPrompt = [{
 
 export const newBuildPrompt = [{
     type: 'list',
-    name: 'builds',
+    name: 'language',
     message: 'For What Language?',
     choices: ['React', 'Vue (Not Avail)', 'Ruby (Not Avail)']
 }]
