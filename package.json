@@ -1,7 +1,7 @@
 {
   "name": "@ashthomascode/hal",
-  "version": "1.0.0",
-  "description": "Initial CLI test app",
+  "version": "2.0.0",
+  "description": "CLI for reuseable components",
   "main": "index.js",
   "type": "module",
   "scripts": {

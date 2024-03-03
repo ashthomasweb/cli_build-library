@@ -7,7 +7,7 @@ import { styled } from "./styles.mjs"
 -- Component directory is currently being passed to libraryNav(), and not able to be reset during recursive operation. Disallowing continuous operations after component is copied.
 */
 
-export const relativeDirectoryArray = [`c:`, `Users`, `rideo`, `Dropbox`, 'Code', 'projects', 'cli', `initial-test`] // NEEDS to be set on install to local folder
+export const relativeDirectoryArray = [`c:`, `Users`, `rideo`, `Dropbox`, 'Code', 'projects', '__active', 'project_cli', '_src-folder', 'cli', `initial-test`] // NEEDS to be set on install to local folder
 export const componentDirectory = [...relativeDirectoryArray, 'componentLibrary', 'library'] // NEEDS to reference /installedFolder/node_modules/hal/library
 export const halRootDirectory = 'c:/Users/rideo/Dropbox/Code/projects/cli/initial-test' // Currently not in use - referenced in setSourceAction()
 export const userRootDirectory = 'c:/Users/rideo/Dropbox/Code/projects/cli/hal-test'// Currently not in use - referenced in setSourceAction()
