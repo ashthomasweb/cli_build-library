@@ -14,7 +14,7 @@ import inquirer from "inquirer"
 import * as p from './prompts.js'
 import { clearANSI } from './styles.mjs'
 import { stat, readFileSync, promises } from 'fs'
-import { setSourceAction, newFileAction, newFolderAction } from "./inquirerActions.mjs"
+import { setSourceAction, newFileAction, newFolderAction, newBuildAtLocation } from "./inquirerActions.mjs"
 import { answerMatch, styledComponentRegex, noExportRegExp, updatePrimaryStyleSheet, fsWriteFile } from "./utilities.mjs"
 
 var tempComponentFilename = null
@@ -64,7 +64,7 @@ function handleNamingUpdatingAndNav(primaryStyleSheetInitContent = null) {
 
 export var pathArray = relativeDirectoryArray
 
-export function nav(commandArray = defaultCommands) {
+export function nav(commandArray = defaultCommands, options = null) {
 
     inquirer.prompt(p.generateDynamicPrompt(commandArray)).then((answers) => {
         if (answerMatch(answers.contents, cmd.back)) {
@@ -93,6 +93,8 @@ export function nav(commandArray = defaultCommands) {
             newFileAction(pathArray)
         } else if (answerMatch(answers.contents, cmd.newFolder)) {
             newFolderAction(pathArray)
+        } else if (answerMatch(answers.contents, cmd.startBuild)) {
+            newBuildAtLocation(pathArray, options)
         } else {
             stat(`${pathArray.join('/')}/${clearANSI(answers.contents)}`, (err, stats) => {
                 if (err) {
@@ -102,7 +104,7 @@ export function nav(commandArray = defaultCommands) {
                         console.log('No action available') // THIS IS A USELESS ENDPOINT FOR THE USER
                     } else if (stats.isDirectory()) {
                         pathArray.push(clearANSI(answers.contents))
-                        nav(commandArray)
+                        nav(commandArray, options)
                     } else {
                         console.log('The selection is neither a file nor a folder.')
                     }

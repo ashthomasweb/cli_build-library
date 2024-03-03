@@ -1,7 +1,7 @@
 import inquirer from "inquirer"
 import * as p from './prompts.js'
 import { nav } from "./nav.mjs"
-import { settingsCommands } from "./config.mjs"
+import { newBuildPlacement, settingsCommands } from "./config.mjs"
 import { fsWriteFile } from "./utilities.mjs"
 import { readFileSync, writeFile, mkdir } from "fs"
 import { halRootDirectory, userRootDirectory } from "./config.mjs"
@@ -39,6 +39,15 @@ export function newBuildActions() {
 
 export function buildChooser(language, build) {
     console.log(language, build)
+    const options = {
+        language,
+        build
+    }
+    nav(newBuildPlacement, options)
+}
+
+export function newBuildAtLocation(pathArray, options) {
+    console.log(pathArray, options)
 }
 
 export function newFileAction(path) {

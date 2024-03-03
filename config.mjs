@@ -35,11 +35,7 @@ export const navCommandObject = {
     setSRC: 'Set /src Here',
     newFile: 'New File In Current Directory',
     newFolder: 'Create New Folder In Current Directory',
-    parcel: 'Parcel',
-    vite: 'Vite'
-}
-
-export const buildCommands = {
+    startBuild: 'Create /src Directory Here'
 }
 
 const cmd = navCommandObject
@@ -48,6 +44,6 @@ export const standardCommands = [cmd.back, cmd.cancel]
 export const defaultCommands = [...standardCommands, cmd.place]
 export const settingsCommands = [...standardCommands, cmd.setSRC]
 export const newFileFolderCommands = [...standardCommands, cmd.newFile, cmd.newFolder]
-export const newBuildMenuCommands = [cmd.cancel, cmd.parcel, cmd.vite]
 export const fromLibraryCommands = [cmd.cancel]
 export const placeComponentCommands = [...standardCommands, cmd.newFolder, cmd.place,]
+export const newBuildPlacement = [...standardCommands, cmd.startBuild]
