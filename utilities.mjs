@@ -4,6 +4,7 @@ import inquirer from 'inquirer'
 import { clearANSI, styled } from './styles.mjs'
 import { writeFile, cp } from 'fs'
 import { directoriesContainingStyleSheets, directoriesWithNoExport } from './config.mjs'
+import * as p from './prompts.js'
 
 const statPromise = util.promisify(stat)
 
@@ -58,12 +59,19 @@ export function fsWriteFile(path, newContent) {
     })
 }
 
-export function writeNewBundle(pathArray, options) {
-    cp(source, pathArray.join('/'), { recursive: true }, (err) => {
-        if (err) {
-          console.error(err);
-        }
-      })
+export function writeNewBundle(pathArray, options) { // options is the source
+    console.log(options)
+    console.log(pathArray)
+    const sourcePath = `${options.bundlePath.join('/')}/${options.langBundleSelection.join('/')}/${clearANSI(options.bundleSelection)}`
+    console.log(sourcePath)
+    inquirer.prompt(p.newBundlePrompt).then(answers => {
+        cp(sourcePath, `${pathArray.join('/')}/${answers.rootDirName}`, { recursive: true }, (err) => {
+            if (err) {
+              console.error(err);
+            }
+          })
+
+    })
 }
 
 export function updatePrimaryStyleSheet(primaryStyleSheet, componentFilename, componentType) {

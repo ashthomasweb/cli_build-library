@@ -9,13 +9,14 @@ import {
     projectComponentStylesFolder,
     projectMainStylesheet,
     placeComponentCommands,
-    navCommandObject as cmd
+    navCommandObject as cmd,
+    newBuildPlacement
 } from "./config.mjs" // COULD BE BROUGHT IN CLEANER AFTER CONFIG IS FULLY OPERATIONAL
 import inquirer from "inquirer"
 import * as p from './prompts.js'
 import { clearANSI } from './styles.mjs'
 import { stat, readFileSync, promises } from 'fs'
-import { setSourceAction, newFileAction, newFolderAction } from "./inquirerActions.mjs"
+import { setSourceAction, newFileAction, newFolderAction, newBuildAtLocation } from "./inquirerActions.mjs"
 import { answerMatch, styledComponentRegex, noExportRegExp, updatePrimaryStyleSheet, fsWriteFile } from "./utilities.mjs"
 
 var tempComponentFilename = null
@@ -170,7 +171,9 @@ export function bundleNav(commandArray = defaultCommands, startingLocation) {
             if (err) {
                 console.error('Error getting file/folder information:', err)
             } else {
-                console.log(bundlePath, startingLocation, answers.selection)      
+                console.log(bundlePath, startingLocation, answers.selection)  
+                const options = {bundlePath : bundlePath, langBundleSelection: startingLocation, bundleSelection: answers.selection}
+                nav(newBuildPlacement, options)    
             }
         })
     })

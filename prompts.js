@@ -73,6 +73,12 @@ export const vueBuilds = [{
     choices: ['Unknown']
 }]
 
+export const newBundlePrompt = [{
+    type: 'input',
+    name: 'rootDirName',
+    message: 'What would you like your root directory to be called?',
+}]
+
 export function generateDynamicPrompt(commandArray = defaultCommands) {
     const dynamicFolderPrompt = [{
         type: 'list',

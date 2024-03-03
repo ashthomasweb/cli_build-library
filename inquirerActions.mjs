@@ -1,12 +1,11 @@
 import inquirer from "inquirer"
 import * as p from './prompts.js'
 import { bundleNav, nav } from "./nav.mjs"
-import { newBuildPlacement, settingsCommands, standardCommands } from "./config.mjs"
-import { fsWriteFile } from "./utilities.mjs"
+import { settingsCommands, standardCommands } from "./config.mjs"
+import { fsWriteFile, writeNewBundle } from "./utilities.mjs"
 import { readFileSync, writeFile, mkdir } from "fs"
 import { halRootDirectory, userRootDirectory } from "./config.mjs"
 import { newFileFolderCommands } from "./config.mjs"
-import { build } from "vite"
 
 export function settingsActions() {
     inquirer.prompt(p.settingsPrompt).then(answers => {
@@ -44,13 +43,11 @@ export function buildChooser(language, build) {
         build.toLowerCase()
     ]
     bundleNav(standardCommands, bundleOptions)
-    // nav(newBuildPlacement, options) 
 }
 
-// export function newBuildAtLocation(pathArray, options) {
-//     console.log(pathArray, options)
-//     writeNewBundle(pathArray, options)
-// }
+export function newBuildAtLocation(pathArray, options) {
+    writeNewBundle(pathArray, options)
+}
 
 export function newFileAction(path) {
     const currentDirectory = path.join('/')
