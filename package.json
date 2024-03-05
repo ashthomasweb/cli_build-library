@@ -2,10 +2,11 @@
   "name": "@ashthomascode/hal",
   "version": "2.0.0",
   "description": "CLI for reuseable components",
-  "main": "index.js",
+  "main": "src/index.js",
   "type": "module",
   "scripts": {
-    "test": "test"
+    "test": "test",
+    "hal": "node src/index.js"
   },
   "bin": {
     "hal": "index.js"

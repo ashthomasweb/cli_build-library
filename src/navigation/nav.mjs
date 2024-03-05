@@ -11,13 +11,13 @@ import {
     placeComponentCommands,
     navCommandObject as cmd,
     newBuildPlacement
-} from "./config.mjs" // COULD BE BROUGHT IN CLEANER AFTER CONFIG IS FULLY OPERATIONAL
+} from "../config.mjs" // COULD BE BROUGHT IN CLEANER AFTER CONFIG IS FULLY OPERATIONAL
 import inquirer from "inquirer"
-import * as p from './prompts.js'
-import { clearANSI } from './styles.mjs'
+import * as p from '../inquirer/prompts.js'
+import { clearANSI } from '../styles/styles.mjs'
 import { stat, readFileSync, promises } from 'fs'
-import { setSourceAction, newFileAction, newFolderAction, newBuildAtLocation } from "./inquirerActions.mjs"
-import { answerMatch, styledComponentRegex, noExportRegExp, updatePrimaryStyleSheet, fsWriteFile } from "./utilities.mjs"
+import { setSourceAction, newFileAction, newFolderAction, newBuildActions } from "../inquirer/actions.mjs"
+import { answerMatch, styledComponentRegex, noExportRegExp, updatePrimaryStyleSheet, fsWriteFile, writeNewBundle } from "../services/utilities.mjs"
 
 var tempComponentFilename = null
 var tempComponentContent = null
@@ -69,9 +69,9 @@ export var pathArray = relativeDirectoryArray
 export function nav(commandArray = defaultCommands, options = null) {
 
     inquirer.prompt(p.generateDynamicPrompt(commandArray)).then((answers) => {
-        if (answerMatch(answers.contents, cmd.back)) {
+        if (answerMatch(answers.contents, cmd.up)) {
             pathArray = pathArray.slice(0, -1)
-            nav(commandArray)
+            nav(commandArray, options)
         } else if (answerMatch(answers.contents, cmd.cancel)) {
             console.log('Goodbye!')
         } else if (answerMatch(answers.contents, cmd.place)) {
@@ -86,9 +86,6 @@ export function nav(commandArray = defaultCommands, options = null) {
             } finally {
                 garbageCollectTempVars()
             }
-            // setTimeout(() => { // NOT WORKING HACK TO ENABLE CONTINUOUS NAV OPERATIONS
-            //     libraryNav()
-            // }, 1500)
         } else if (answerMatch(answers.contents, cmd.setSRC)) {
             setSourceAction()
         } else if (answerMatch(answers.contents, cmd.newFile)) {
@@ -96,7 +93,7 @@ export function nav(commandArray = defaultCommands, options = null) {
         } else if (answerMatch(answers.contents, cmd.newFolder)) {
             newFolderAction(pathArray)
         } else if (answerMatch(answers.contents, cmd.startBuild)) {
-            newBuildAtLocation(pathArray, options)
+            writeNewBundle(pathArray, options)
         } else {
             stat(`${pathArray.join('/')}/${clearANSI(answers.contents)}`, (err, stats) => {
                 if (err) {
@@ -167,15 +164,21 @@ const bundlePath = bundlesDirectory
 
 export function bundleNav(commandArray = defaultCommands, startingLocation) {
     inquirer.prompt(p.generateDynamicBundlePrompt(commandArray, startingLocation)).then(answers => {
-        stat(`${bundlePath.join('/')}/${startingLocation.join('/')}/${clearANSI(answers.selection)}`, (err, stats) => {
-            if (err) {
-                console.error('Error getting file/folder information:', err)
-            } else {
-                console.log(bundlePath, startingLocation, answers.selection)  
-                const options = {bundlePath : bundlePath, langBundleSelection: startingLocation, bundleSelection: answers.selection}
-                nav(newBuildPlacement, options)    
-            }
-        })
+        if (answerMatch(answers.selection, cmd.reset)) {
+            newBuildActions()
+        } else if (answerMatch(answers.selection, cmd.cancel)) {
+            console.log('Goodbye!')
+        } else {
+            stat(`${bundlePath.join('/')}/${startingLocation.join('/')}/${clearANSI(answers.selection)}`, (err, stats) => {
+                if (err) {
+                    console.error('Error getting file/folder information:', err)
+                } else {
+                    console.log(bundlePath, startingLocation, answers.selection)
+                    const options = { bundlePath: bundlePath, langBundleSelection: startingLocation, bundleSelection: answers.selection }
+                    nav(newBuildPlacement, options)
+                }
+            })
+        }
     })
 }
 

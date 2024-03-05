@@ -1,11 +1,11 @@
 import inquirer from "inquirer"
 import * as p from './prompts.js'
-import { bundleNav, nav } from "./nav.mjs"
-import { settingsCommands, standardCommands } from "./config.mjs"
-import { fsWriteFile, writeNewBundle } from "./utilities.mjs"
+import { bundleNav, nav } from "../navigation/nav.mjs"
+import { settingsCommands, newBuildCommands } from "../config.mjs"
+import { fsWriteFile } from "../services/utilities.mjs"
 import { readFileSync, writeFile, mkdir } from "fs"
-import { halRootDirectory, userRootDirectory } from "./config.mjs"
-import { newFileFolderCommands } from "./config.mjs"
+import { halRootDirectory, userRootDirectory } from "../config.mjs"
+import { newFileFolderCommands } from "../config.mjs"
 
 export function settingsActions() {
     inquirer.prompt(p.settingsPrompt).then(answers => {
@@ -17,17 +17,18 @@ export function settingsActions() {
     })
 }
 
-export function newBuildActions() {
+export function newBuildActions() { // TODO: needs language specific handling
     let language
     let build
     inquirer.prompt(p.newBuildPrompt).then(answers => {
         language = answers.language
         if (answers.language === 'React') {
             inquirer.prompt(p.reactBuilds).then(answers => {
+                console.log(answers)
                 build = answers.reactBuilds
                 buildChooser(language, build)
             })
-        } else if (answers.language === 'Vue (Not Avail)') {
+        } else if (answers.language === 'Vue') {
             inquirer.prompt(p.vueBuilds).then(answers => {
                 build = answers.vueBuilds
                 buildChooser(language, build)
@@ -37,16 +38,11 @@ export function newBuildActions() {
 }
 
 export function buildChooser(language, build) {
-    console.log(language, build)
     const bundleOptions = [
         language.toLowerCase(),
         build.toLowerCase()
     ]
-    bundleNav(standardCommands, bundleOptions)
-}
-
-export function newBuildAtLocation(pathArray, options) {
-    writeNewBundle(pathArray, options)
+    bundleNav(newBuildCommands, bundleOptions)
 }
 
 export function newFileAction(path) {
@@ -78,7 +74,7 @@ export function newFolderAction(path) {
     })
 }
 
-export function setSourceAction() { // CURRENTLY NOT IN USE
+export function setSourceAction() {
     inquirer.prompt(p.srcFolderPrompt).then(answers => {
         const data = readFileSync(`${halRootDirectory}/config.js`, 'utf8')
         const userVarReplace = `export const userRootDirectory = '${userRootDirectory}'`

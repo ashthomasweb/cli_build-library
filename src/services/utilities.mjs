@@ -1,10 +1,10 @@
 import { promises, stat } from 'fs'
 import util from 'util'
 import inquirer from 'inquirer'
-import { clearANSI, styled } from './styles.mjs'
+import { clearANSI, styled } from '../styles/styles.mjs'
 import { writeFile, cp } from 'fs'
-import { directoriesContainingStyleSheets, directoriesWithNoExport } from './config.mjs'
-import * as p from './prompts.js'
+import { directoriesContainingStyleSheets, directoriesWithNoExport } from '../config.mjs'
+import * as p from '../inquirer/prompts.js'
 
 const statPromise = util.promisify(stat)
 
@@ -59,11 +59,8 @@ export function fsWriteFile(path, newContent) {
     })
 }
 
-export function writeNewBundle(pathArray, options) { // options is the source
-    console.log(options)
-    console.log(pathArray)
+export function writeNewBundle(pathArray, options) {
     const sourcePath = `${options.bundlePath.join('/')}/${options.langBundleSelection.join('/')}/${clearANSI(options.bundleSelection)}`
-    console.log(sourcePath)
     inquirer.prompt(p.newBundlePrompt).then(answers => {
         cp(sourcePath, `${pathArray.join('/')}/${answers.rootDirName}`, { recursive: true }, (err) => {
             if (err) {
