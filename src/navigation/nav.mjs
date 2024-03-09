@@ -9,13 +9,14 @@ import {
 } from "../config/config.mjs"
 
 import {
-    relativeDirectoryArray,
     libraryStyleDirectory,
     componentDirectory,
     bundlesDirectory,
     projectComponentStylesFolder,
     projectMainStylesheet,
 } from "../config/pathVariables.mjs"
+
+import { relativeDirectoryArray } from "../config/relativeDirectory.mjs"
 
 /* Library and Helper imports */
 import inquirer from "inquirer"

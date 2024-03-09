@@ -1,5 +1,6 @@
+import { relativeDirectoryArray } from "./relativeDirectory.mjs"
+
 /* Primary application directories */
-export const relativeDirectoryArray = [`c:`, `Users`, `rideo`, `Dropbox`, 'Code', 'projects', '__active', 'project_cli', '_src-folder', 'cli', `hal`] // NEEDS to be set on install to local folder
 export const componentDirectory = [...relativeDirectoryArray, 'src', 'modularAssets', 'library'] // NEEDS to reference /INSTALLLOCATION/node_modules/hal/library !!
 export const bundlesDirectory = [...componentDirectory, 'bundles']
 
