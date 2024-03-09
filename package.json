@@ -1,6 +1,6 @@
 {
   "name": "@ashthomascode/hal",
-  "version": "2.1.0",
+  "version": "2.1.1",
   "description": "CLI for reuseable components",
   "main": "src/index.js",
   "type": "module",
