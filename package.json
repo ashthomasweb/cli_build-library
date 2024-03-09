@@ -8,7 +8,7 @@
     "test": "test",
     "hal": "node src/index.js",
     "dir": "node src/dir.mjs",
-    "postinstall": "node src/post.js"
+    "postinstall": "node src/post.cjs"
   },
   "bin": {
     "hal": "index.js"
