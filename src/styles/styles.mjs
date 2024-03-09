@@ -1,9 +1,9 @@
 export function styled(input, style) {
-    const matchingStyle = ANSICodes.find(code => code.name === style)
+    const matchingStyle = ANSIColors[style]
     const closeTag = '\x1b[0m'
 
     if (matchingStyle) {
-        return `${matchingStyle.code}${input}${closeTag}`
+        return `${matchingStyle}${input}${closeTag}`
     } else {
         return input
     }
@@ -14,37 +14,12 @@ export function clearANSI(input) {
     return input.replace(ansiRegex, '')
 }
 
-export const ANSICodes = [
-    {
-        name: 'red',
-        code: '\x1b[31m',
-    },
-    {
-        name: 'green',
-        code: '\x1b[32m',
-    },
-    {
-        name: 'blue',
-        code: '\x1b[34m',
-    },
-    {
-        name: 'yellow',
-        code: '\x1b[33m',
-    },
-    {
-        name: 'cyan',
-        code: '\x1b[36m',
-    },
-    {
-        name: 'bold',
-        code: '\x1b[1m',
-    },
-    {
-        name: 'italics',
-        code: '\x1b[3m',
-    },
-    {
-        name: 'close',
-        code: '\x1b[0m'
-    }
-]
+const ANSIColors = {
+    red: '\x1b[31m',
+    green: '\x1b[32m',
+    blue: '\x1b[34m',
+    yellow: '\x1b[33m',
+    cyan: '\x1b[36m',
+    bold: '\x1b[1m',
+    italics: '\x1b[3m',
+}

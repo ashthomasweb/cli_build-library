@@ -1,24 +1,28 @@
 #! /usr/bin/env node
+import { 
+    defaultCommands, 
+    mainMenuChoices as choices, 
+    newFileFolderCommands, 
+    standardNavCommands 
+} from './config/config.mjs'
 import inquirer from 'inquirer'
 import * as p from './inquirer/prompts.js'
-import { defaultCommands, mainMenuChoices as mmc } from './config.mjs'
-import { libraryNav, nav } from './navigation/nav.mjs'
-import { newFileFolderCommands, standardNavCommands } from "./config.mjs"
 import { settingsActions, newBuildActions } from './inquirer/actions.mjs'
+import { libraryNav, nav } from './navigation/nav.mjs'
 
 inquirer.prompt(p.mainMenuPrompt).then(answers => {
 
-    if (answers.main_menu === mmc.createNew) {
+    if (answers.main_menu === choices.createNew) {
         nav(newFileFolderCommands)
-    } else if (answers.main_menu === mmc.build) {
+    } else if (answers.main_menu === choices.build) {
         newBuildActions()
-    } else if (answers.main_menu === mmc.copyFrom) {
+    } else if (answers.main_menu === choices.copyFrom) {
         libraryNav(defaultCommands)
-    } else if (answers.main_menu === mmc.settings) {
+    } else if (answers.main_menu === choices.settings) {
         settingsActions()
-    } else if (answers.main_menu === mmc.explore) {
+    } else if (answers.main_menu === choices.explore) {
         nav(standardNavCommands)
-    } else if (answers.main_menu === mmc.help) {
+    } else if (answers.main_menu === choices.help) {
         console.log('Help docs coming soon!')
     }
 

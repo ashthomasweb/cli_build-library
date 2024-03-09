@@ -1,24 +1,46 @@
+/* Configuration imports */
+import {
+    defaultCommands,
+    fromLibraryCommands,
+    directoriesContainingStyleSheets,
+    placeComponentCommands,
+    navCommandObject as cmd,
+    newBuildPlacement
+} from "../config/config.mjs"
+
 import {
     relativeDirectoryArray,
     libraryStyleDirectory,
     componentDirectory,
     bundlesDirectory,
-    defaultCommands,
-    fromLibraryCommands,
-    directoriesContainingStyleSheets,
     projectComponentStylesFolder,
     projectMainStylesheet,
-    placeComponentCommands,
-    navCommandObject as cmd,
-    newBuildPlacement
-} from "../config.mjs" // COULD BE BROUGHT IN CLEANER AFTER CONFIG IS FULLY OPERATIONAL
+} from "../config/pathVariables.mjs"
+
+/* Library and Helper imports */
 import inquirer from "inquirer"
 import * as p from '../inquirer/prompts.js'
-import { clearANSI } from '../styles/styles.mjs'
-import { stat, readFileSync, promises } from 'fs'
-import { setSourceAction, newFileAction, newFolderAction, newBuildActions } from "../inquirer/actions.mjs"
-import { answerMatch, styledComponentRegex, noExportRegExp, updatePrimaryStyleSheet, fsWriteFile, writeNewBundle } from "../services/utilities.mjs"
+import { 
+    setSourceAction, 
+    newFileAction, 
+    newFolderAction, 
+    newBuildActions 
+} from "../inquirer/actions.mjs"
 
+import { stat, readFileSync, promises} from 'fs'
+
+import { 
+    answerMatch, 
+    styledComponentRegex, 
+    noExportRegExp, 
+    updatePrimaryStyleSheet, 
+    fsWriteFile, 
+    writeNewBundle 
+} from "../services/utilities.mjs"
+
+import { clearANSI } from '../styles/styles.mjs'
+
+/* Local variable used to store temporary values */
 var tempComponentFilename = null
 var tempComponentContent = null
 var tempStylesheetContent = null

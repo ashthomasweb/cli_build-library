@@ -1,11 +1,22 @@
+/* Configuration imports */
+
+import { 
+    settingsCommands, 
+    newBuildCommands, 
+    newFileFolderCommands 
+} from "../config/config.mjs"
+
+import { 
+    halRootDirectory, 
+    userRootDirectory 
+} from "../config/pathVariables.mjs"
+
+/* Library and Helper imports */
 import inquirer from "inquirer"
 import * as p from './prompts.js'
-import { bundleNav, nav } from "../navigation/nav.mjs"
-import { settingsCommands, newBuildCommands } from "../config.mjs"
-import { fsWriteFile } from "../services/utilities.mjs"
 import { readFileSync, writeFile, mkdir } from "fs"
-import { halRootDirectory, userRootDirectory } from "../config.mjs"
-import { newFileFolderCommands } from "../config.mjs"
+import { fsWriteFile } from "../services/utilities.mjs"
+import { bundleNav, nav } from "../navigation/nav.mjs"
 
 export function settingsActions() {
     inquirer.prompt(p.settingsPrompt).then(answers => {
@@ -74,7 +85,7 @@ export function newFolderAction(path) {
     })
 }
 
-export function setSourceAction() {
+export function setSourceAction() { // ATTN: Is this being used?
     inquirer.prompt(p.srcFolderPrompt).then(answers => {
         const data = readFileSync(`${halRootDirectory}/config.js`, 'utf8')
         const userVarReplace = `export const userRootDirectory = '${userRootDirectory}'`

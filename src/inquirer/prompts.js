@@ -1,11 +1,17 @@
+/* Configuration imports */
 import {
-    bundlesDirectory,
-    componentDirectory,
     defaultCommands,
-} from '../config.mjs'
+    mainMenuChoices as mmc
+} from '../config/config.mjs'
+
+import { 
+    componentDirectory, 
+    bundlesDirectory 
+} from '../config/pathVariables.mjs'
+
+/* Library and Helper imports */
 import { gatherDynamicFolderContents } from '../services/utilities.mjs'
 import { pathArray } from '../navigation/nav.mjs'
-import { mainMenuChoices as mmc } from '../config.mjs'
 
 export const mainMenuPrompt = [{
     type: 'list',

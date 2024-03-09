@@ -1,10 +1,15 @@
-import { promises, stat } from 'fs'
+/* Configuration imports */
+import { 
+    directoriesContainingStyleSheets, 
+    directoriesWithNoExport 
+} from '../config/config.mjs'
+
+/* Library and Helper imports */
 import util from 'util'
 import inquirer from 'inquirer'
-import { clearANSI, styled } from '../styles/styles.mjs'
-import { writeFile, cp } from 'fs'
-import { directoriesContainingStyleSheets, directoriesWithNoExport } from '../config.mjs'
 import * as p from '../inquirer/prompts.js'
+import { promises, stat, writeFile, cp } from 'fs'
+import { clearANSI, styled } from '../styles/styles.mjs'
 
 const statPromise = util.promisify(stat)
 
