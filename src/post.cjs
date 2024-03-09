@@ -1,5 +1,7 @@
-console.log(process.cwd())
+console.log('process.cwd(): ', process.cwd())
 
-console.log(global)
+console.log('global: ', global)
 
-console.log(__dirname)
+console.log('dirname: ', __dirname)
+
+// throw new Error('test')
