@@ -1,6 +1,6 @@
 {
   "name": "@ashthomascode/hal",
-  "version": "2.1.1",
+  "version": "2.1.2",
   "description": "CLI for reuseable components",
   "main": "src/index.js",
   "type": "module",
@@ -8,7 +8,7 @@
     "test": "test",
     "hal": "node src/index.js",
     "dir": "node src/dir.mjs",
-    "postinstall": "node src/post.cjs"
+    "postinstall": "node src/post.cjs --loglevel verbose"
   },
   "bin": {
     "hal": "index.js"
