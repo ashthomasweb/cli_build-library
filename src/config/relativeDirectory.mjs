@@ -1,1 +1,1 @@
-export const relativeDirectoryArray = []
+export const relativeDirectoryArray = ['C:','Users','rideo','Dropbox','Code','projects','__active','project_cli','_src-folder','cli','hal']
