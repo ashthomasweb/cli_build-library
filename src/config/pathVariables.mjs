@@ -9,6 +9,8 @@ export const libraryStyleDirectory = [...relativeDirectoryArray, 'src', 'modular
 export const projectComponentStylesFolder = [...relativeDirectoryArray, '_testDirs', 'aNewTestFolder', 'scss'] // !!!! NEEDS to be set to best practice structure along with proper relativeDirectory and not hard-coded
 export const projectMainStylesheet = [...relativeDirectoryArray, '_testDirs', 'aNewTestFolder', 'scss', 'styles.scss'] // !!!! NEEDS to be set to best practice structure along with proper relativeDirectory and not hard-coded
 
-/* User settable directories */
-export const halRootDirectory = 'c:/Users/rideo/Dropbox/Code/projects/cli/hal' // Currently not in use - referenced in setSourceAction()
-export const userRootDirectory = ''// Currently not in use?? - referenced in setSourceAction()
+
+// ATTN: Planned feature - User Settings
+// /* User settable directories */
+// export const halRootDirectory = 'c:/Users/rideo/Dropbox/Code/projects/cli/hal' // Currently not in use - referenced in setSourceAction()
+// export const userRootDirectory = ''// Currently not in use?? - referenced in setSourceAction()

@@ -9,8 +9,8 @@ export const mainMenuChoices = {
     build: `${styled('Start', 'yellow')} New Project Build`,
     explore: `${styled('Explore', 'yellow')} Starting From /src/`,
     createNew: `${styled('Create', 'yellow')} New Blank File or Folder`,
-    help: `Display Help Docs`,
-    settings: `User Settings`
+    help: `Display Help Docs - Coming Soon!`,
+    settings: `User Settings - Coming Soon!`
 }
 
 export const navCommandObject = {

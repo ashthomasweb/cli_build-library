@@ -6,10 +6,11 @@ import {
     newFileFolderCommands 
 } from "../config/config.mjs"
 
-import { 
-    halRootDirectory, 
-    userRootDirectory 
-} from "../config/pathVariables.mjs"
+// ATTN: Planned feature - User Settings
+// import { 
+//     halRootDirectory, 
+//     userRootDirectory 
+// } from "../config/pathVariables.mjs"
 
 /* Library and Helper imports */
 import inquirer from "inquirer"
@@ -85,13 +86,14 @@ export function newFolderAction(path) {
     })
 }
 
-export function setSourceAction() { // ATTN: Is this being used?
-    inquirer.prompt(p.srcFolderPrompt).then(answers => {
-        const data = readFileSync(`${halRootDirectory}/config.js`, 'utf8')
-        const userVarReplace = `export const userRootDirectory = '${userRootDirectory}'`
-        const varPrefix = 'export const userRootDirectory ='
-        const regex = new RegExp(userVarReplace, 'g')
-        const newContent = data.replace(regex, `${varPrefix} '${answers.src_folder}'`).toString()
-        fsWriteFile(`${halRootDirectory}/config.js`, newContent)
-    })
-}
+// ATTN: Planned feature - User Settings
+// export function setSourceAction() { 
+//     inquirer.prompt(p.srcFolderPrompt).then(answers => {
+//         const data = readFileSync(`${halRootDirectory}/config.js`, 'utf8')
+//         const userVarReplace = `export const userRootDirectory = '${userRootDirectory}'`
+//         const varPrefix = 'export const userRootDirectory ='
+//         const regex = new RegExp(userVarReplace, 'g')
+//         const newContent = data.replace(regex, `${varPrefix} '${answers.src_folder}'`).toString()
+//         fsWriteFile(`${halRootDirectory}/config.js`, newContent)
+//     })
+// }

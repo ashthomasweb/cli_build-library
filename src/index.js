@@ -7,7 +7,10 @@ import {
 } from './config/config.mjs'
 import inquirer from 'inquirer'
 import * as p from './inquirer/prompts.js'
-import { settingsActions, newBuildActions } from './inquirer/actions.mjs'
+import { 
+    // settingsActions, // ATTN: Feature planned - User settings
+    newBuildActions 
+} from './inquirer/actions.mjs'
 import { libraryNav, nav } from './navigation/nav.mjs'
 
 inquirer.prompt(p.mainMenuPrompt).then(answers => {
@@ -19,7 +22,8 @@ inquirer.prompt(p.mainMenuPrompt).then(answers => {
     } else if (answers.main_menu === choices.copyFrom) {
         libraryNav(defaultCommands)
     } else if (answers.main_menu === choices.settings) {
-        settingsActions()
+        // settingsActions()
+        console.log('Settings coming soon!')
     } else if (answers.main_menu === choices.explore) {
         nav(standardNavCommands)
     } else if (answers.main_menu === choices.help) {

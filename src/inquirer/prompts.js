@@ -22,8 +22,8 @@ export const mainMenuPrompt = [{
         mmc.build,
         mmc.explore,
         mmc.createNew,
-        mmc.help,
-        mmc.settings
+        mmc.help, // ATTN: Planned feature - Help doc
+        mmc.settings // ATTN: Planned feature - User Settings
     ]
 }]
 
@@ -43,19 +43,6 @@ export const whatComponentNamePrompt = [{
     type: 'input',
     name: 'what_compname',
     message: `What is the component named? i.e - the 'in-file' exported name.` 
-}]
-
-export const srcFolderPrompt = [{
-    type: 'input',
-    name: 'src_folder',
-    message: 'Type path of your /src folder',
-}]
-
-export const settingsPrompt = [{
-    type: 'list',
-    name: 'settings',
-    message: 'User configurable settings',
-    choices: ['Set /src folder', 'Reset /src folder', 'Set style sheet options']
 }]
 
 export const newBuildPrompt = [{
@@ -85,6 +72,7 @@ export const newBundlePrompt = [{
     message: 'What would you like your root directory to be called?',
 }]
 
+// START Refactor
 export function generateDynamicPrompt(commandArray = defaultCommands) {
     const dynamicFolderPrompt = [{
         type: 'list',
@@ -109,14 +97,29 @@ export function generateDynamicLibraryPrompt(commandArray = defaultCommands) {
     return dynamicFolderPrompt
 }
 
-export function generateDynamicBundlePrompt(commandArray = defaultCommands, startingLocation) {
+export function generateDynamicBundlePrompt(commandArray = defaultCommands, bundleSelectionPath) {
     const dynamicFolderPrompt = [{
         type: 'list',
         name: 'selection',
         message: 'Navigation',
-        choices: () => gatherDynamicFolderContents(`${bundlesDirectory.join('/')}/${startingLocation.join('/')}`, commandArray),
+        choices: () => gatherDynamicFolderContents(`${bundlesDirectory.join('/')}/${bundleSelectionPath.join('/')}`, commandArray),
         pageSize: 25,
         default: commandArray.length
     }]
     return dynamicFolderPrompt
 }
+// END Refactor
+
+// Not currently in use - backlog
+// export const srcFolderPrompt = [{ // ATTN: Planned feature - User settings
+//     type: 'input',
+//     name: 'src_folder',
+//     message: 'Type path of your /src folder',
+// }]
+
+// export const settingsPrompt = [{ // ATTN: Planned feature - User settings
+//     type: 'list',
+//     name: 'settings',
+//     message: 'Settings coming soon!',
+//     choices: ['Set /src folder', 'Reset /src folder', 'Set style sheet options']
+// }]
