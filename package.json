@@ -1,6 +1,6 @@
 {
   "name": "@ashthomascode/hal",
-  "version": "2.2.10",
+  "version": "2.2.14",
   "description": "CLI for reuseable components",
   "main": "src/index.js",
   "type": "module",
@@ -10,7 +10,7 @@
     "postinstall": "node postInstall.cjs"
   },
   "bin": {
-    "hal": "index.js"
+    "hal": "src/index.js"
   },
   "author": "Ashley Thomas",
   "license": "ISC",
