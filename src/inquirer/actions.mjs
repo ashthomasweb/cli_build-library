@@ -18,6 +18,7 @@ import * as p from './prompts.js'
 import { readFileSync, writeFile, mkdir } from "fs"
 import { fsWriteFile } from "../services/utilities.mjs"
 import { bundleNav, nav } from "../navigation/nav.mjs"
+import { bundlesDirectory } from "../config/pathVariables.mjs"
 
 export function settingsActions() {
     inquirer.prompt(p.settingsPrompt).then(answers => {
@@ -36,7 +37,7 @@ export function newBuildActions() { // TODO: needs language specific handling
         language = answers.language
         if (answers.language === 'React') {
             inquirer.prompt(p.reactBuilds).then(answers => {
-                console.log(answers)
+                console.log(answers, 'test')
                 build = answers.reactBuilds
                 buildChooser(language, build)
             })
@@ -50,11 +51,13 @@ export function newBuildActions() { // TODO: needs language specific handling
 }
 
 export function buildChooser(language, build) {
-    const bundleOptions = [
-        language.toLowerCase(),
-        build.toLowerCase()
-    ]
-    bundleNav(newBuildCommands, bundleOptions)
+    console.log('TRACE: buildChooser')
+    // const selectedBundlePath = [ // ATTN: it seems this is actually a constructed path, not a set of params!
+    //     bundlesDirectory,
+    //     language.toLowerCase(),
+    //     build.toLowerCase()
+    // ]
+    bundleNav(newBuildCommands, `${bundlesDirectory.join('/')}/${language.toLowerCase()}/${build.toLowerCase()}`)
 }
 
 export function newFileAction(path) {

@@ -40,6 +40,7 @@ import {
 } from "../services/utilities.mjs"
 
 import { clearANSI } from '../styles/styles.mjs'
+import { trace } from "console"
 
 /* Local variable used to store temporary values */
 var tempComponentFilename = null
@@ -62,7 +63,7 @@ function garbageCollectTempVars() {
     hasStylesheet = false
 }
 
-function updateStyleAction(answers) {
+function updateStyleAction(answers, libraryPath) {
     libraryPath.push(clearANSI(answers.selection))
     libraryPath.join('/').match(noExportRegExp) === null && (hasExport = true)
 
@@ -77,15 +78,15 @@ function updateStyleAction(answers) {
             const relativeStyleSheetFilename = result.filter(entry => entry.includes(clearANSI(answers.selection.split('.')[0])))[0]
             tempStylesheetContent = readFileSync(`${libraryStyleDirectory.join('/')}/${relativeStyleSheetFilename}`, 'utf8')
             const primaryStyleSheetInitContent = readFileSync(`${projectMainStylesheet.join('/')}`).toString()
-            handleNamingUpdatingAndNav(primaryStyleSheetInitContent)
+            handleNamingUpdatingAndNav(libraryPath, primaryStyleSheetInitContent)
         })
 
     } else { /* --------------- NO STYLESHEET COMPONENTS ---------------- */
-        handleNamingUpdatingAndNav()
+        handleNamingUpdatingAndNav(libraryPath)
     }
 }
 
-function handleNamingUpdatingAndNav(primaryStyleSheetInitContent = null) {
+function handleNamingUpdatingAndNav(libraryPath, primaryStyleSheetInitContent = null) {
     try {
         inquirer.prompt(p.whatFilenamePrompt).then(answers => {
             tempComponentFilename = answers.what_filename
@@ -175,50 +176,60 @@ that new reference into the dynamicPrompt function as an option. This could elim
 dynamicPrompt functions, turning them into one handler function with options.
 
 */
-const libraryPath = componentDirectory // THIS IS WHERE THE ISSUE LIES FOR CONTINUOUS NAV OPERATIONS
 
-export function libraryNav(commandArray = defaultCommands) {
-    inquirer.prompt(p.generateDynamicLibraryPrompt(fromLibraryCommands)).then(answers => {
-        if (answerMatch(answers.selection, cmd.cancel)) {
-            console.log('Goodbye!')
-        } else {
-            stat(`${libraryPath.join('/')}/${clearANSI(answers.selection)}`, (err, stats) => {
-                if (err) {
-                    console.error('Error getting file/folder information:', err)
-                } else {
-                    if (stats.isFile()) { // HANDLES FILE SELECTION
-                        updateStyleAction(answers)
-                    } else if (stats.isDirectory()) { // HANDLES DIRECTORY SELECTION
-                        if (directoriesContainingStyleSheets.includes(clearANSI(answers.selection))) {
-                            tempStyledComponentType = clearANSI(answers.selection)
-                        }
-                        libraryPath.push(clearANSI(answers.selection))
-                        libraryNav(commandArray)
+export const libraryNavHandler = (commandArray = defaultCommands) => {
+
+    let libraryPath = [...componentDirectory] // THIS IS WHERE THE ISSUE LIES FOR CONTINUOUS NAV OPERATIONS .. fix in progress
+
+    function libraryNav(commandArray) {
+        console.log('TRACE: libraryNav')
+        inquirer.prompt(p.generateDynamicLibraryPrompt(fromLibraryCommands, libraryPath)).then(answers => {
+            if (answerMatch(answers.selection, cmd.cancel)) {
+                console.log('Goodbye!')
+            } else if (answerMatch(answers.selection, cmd.up)) {
+                libraryPath = libraryPath.slice(0, -1)
+                libraryNav(commandArray)
+            } else {
+                stat(`${libraryPath.join('/')}/${clearANSI(answers.selection)}`, (err, stats) => {
+                    if (err) {
+                        console.error('Error getting file/folder information:', err)
                     } else {
-                        console.log('The selection is neither a file nor a folder.')
+                        if (stats.isFile()) { // HANDLES FILE SELECTION
+                            updateStyleAction(answers, libraryPath)
+                        } else if (stats.isDirectory()) { // HANDLES DIRECTORY SELECTION
+                            if (directoriesContainingStyleSheets.includes(clearANSI(answers.selection))) {
+                                tempStyledComponentType = clearANSI(answers.selection)
+                            }
+                            libraryPath.push(clearANSI(answers.selection))
+                            libraryNav(commandArray)
+                        } else {
+                            console.log('The selection is neither a file nor a folder.')
+                        }
                     }
-                }
-            })
-        }
-    })
+                })
+            }
+        })
+    }
+    libraryNav(commandArray)
 }
 
-const bundlePath = bundlesDirectory
+// const bundlePath = bundlesDirectory
 
-export function bundleNav(commandArray = defaultCommands, bundleSelection) {
-    inquirer.prompt(p.generateDynamicBundlePrompt(commandArray, bundleSelection)).then(answers => {
+export function bundleNav(commandArray = defaultCommands, bundlePath) {
+    console.log('TRACE: bundleNav', bundlePath)
+    inquirer.prompt(p.generateDynamicBundlePrompt(commandArray, bundlePath)).then(answers => {
         if (answerMatch(answers.selection, cmd.reset)) {
             newBuildActions()
         } else if (answerMatch(answers.selection, cmd.cancel)) {
             console.log('Goodbye!')
         } else {
-            stat(`${bundlePath.join('/')}/${bundleSelection.join('/')}/${clearANSI(answers.selection)}`, (err, stats) => {
+            stat(`${bundlePath}/${clearANSI(answers.selection)}`, (err, stats) => {
                 if (err) {
                     console.error('Error getting file/folder information:', err)
                 } else {
                     const options = {
                         bundlePath: bundlePath,
-                        langBundleSelection: bundleSelection,
+                        // langBundleSelection: bundlePath,
                         bundleSelection: answers.selection
                     }
                     nav(newBuildPlacement, options)

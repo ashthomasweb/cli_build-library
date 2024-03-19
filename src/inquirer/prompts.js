@@ -74,6 +74,7 @@ export const newBundlePrompt = [{
 
 // START Refactor
 export function generateDynamicPrompt(commandArray = defaultCommands) {
+    console.log('TRACE: genDynPrompt')
     const dynamicFolderPrompt = [{
         type: 'list',
         name: 'contents',
@@ -85,24 +86,26 @@ export function generateDynamicPrompt(commandArray = defaultCommands) {
     return dynamicFolderPrompt
 }
 
-export function generateDynamicLibraryPrompt(commandArray = defaultCommands) {
+export function generateDynamicLibraryPrompt(commandArray = defaultCommands, path) {
+    console.log('TRACE: genDynLibraryPrompt')
     const dynamicFolderPrompt = [{
         type: 'list',
         name: 'selection',
         message: 'Navigation',
-        choices: () => gatherDynamicFolderContents(componentDirectory.join('/'), commandArray),
+        choices: () => gatherDynamicFolderContents(path.join('/'), commandArray),
         pageSize: 25,
         default: commandArray.length
     }]
     return dynamicFolderPrompt
 }
 
-export function generateDynamicBundlePrompt(commandArray = defaultCommands, bundleSelectionPath) {
+export function generateDynamicBundlePrompt(commandArray = defaultCommands, bundlePath) {
+    console.log('TRACE: genDynBunPrompt', bundlePath)
     const dynamicFolderPrompt = [{
         type: 'list',
         name: 'selection',
         message: 'Navigation',
-        choices: () => gatherDynamicFolderContents(`${bundlesDirectory.join('/')}/${bundleSelectionPath.join('/')}`, commandArray),
+        choices: () => gatherDynamicFolderContents(bundlePath, commandArray),
         pageSize: 25,
         default: commandArray.length
     }]

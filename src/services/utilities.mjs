@@ -10,6 +10,7 @@ import inquirer from 'inquirer'
 import * as p from '../inquirer/prompts.js'
 import { promises, stat, writeFile, cp } from 'fs'
 import { clearANSI, styled } from '../styles/styles.mjs'
+import { trace } from 'console'
 
 const statPromise = util.promisify(stat)
 
@@ -26,7 +27,7 @@ export const styledComponentRegex = new RegExp(`(^|[/\\\\])(${directoriesContain
 export const noExportRegExp = new RegExp(`(^|[/\\\\])(${directoriesWithNoExport.join('|')})([/\\\\]|$)`)
 
 export async function gatherDynamicFolderContents(inputDirectory, commandOptions) {
-    
+    console.log('TRACE: gatherDynFolderContents', inputDirectory, commandOptions)
     try {
         const styledCommands = commandOptions.map(entry => (
             styled(styled(entry, 'italics'), 'yellow')
@@ -65,14 +66,14 @@ export function fsWriteFile(path, newContent) {
 }
 
 export function writeNewBundle(pathArray, options) {
-    const sourcePath = `${options.bundlePath.join('/')}/${options.langBundleSelection.join('/')}/${clearANSI(options.bundleSelection)}`
+    console.log('TRACE: writeNewBundle')
+    const sourcePath = `${options.bundlePath}/${clearANSI(options.bundleSelection)}`
     inquirer.prompt(p.newBundlePrompt).then(answers => {
         cp(sourcePath, `${pathArray.join('/')}/${answers.rootDirName}`, { recursive: true }, (err) => {
             if (err) {
-              console.error(err);
+              console.error(err)
             }
           })
-
     })
 }
 

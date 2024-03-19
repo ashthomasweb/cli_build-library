@@ -11,7 +11,7 @@ import {
     // settingsActions, // ATTN: Feature planned - User settings
     newBuildActions 
 } from './inquirer/actions.mjs'
-import { libraryNav, nav } from './navigation/nav.mjs'
+import { libraryNavHandler, nav } from './navigation/nav.mjs'
 
 inquirer.prompt(p.mainMenuPrompt).then(answers => {
 
@@ -20,7 +20,7 @@ inquirer.prompt(p.mainMenuPrompt).then(answers => {
     } else if (answers.main_menu === choices.build) {
         newBuildActions()
     } else if (answers.main_menu === choices.copyFrom) {
-        libraryNav(defaultCommands)
+        libraryNavHandler(defaultCommands)
     } else if (answers.main_menu === choices.settings) {
         // settingsActions()
         console.log('Settings coming soon!')
