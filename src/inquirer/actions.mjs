@@ -1,9 +1,10 @@
 /* Configuration imports */
 
-import { 
-    settingsCommands, 
-    newBuildCommands, 
-    newFileFolderCommands 
+import {
+    settingsCommands,
+    newBuildCommands,
+    newFileFolderCommands,
+    navCommandObject as cmd,
 } from "../config/config.mjs"
 
 // ATTN: Planned feature - User Settings
@@ -19,6 +20,9 @@ import { readFileSync, writeFile, mkdir } from "fs"
 import { fsWriteFile } from "../services/utilities.mjs"
 import { bundleNav, nav } from "../navigation/nav.mjs"
 import { bundlesDirectory } from "../config/pathVariables.mjs"
+import { clearANSI } from "../styles/styles.mjs"
+import { trace } from "console"
+import { styled } from "../styles/styles.mjs"
 
 export function settingsActions() {
     inquirer.prompt(p.settingsPrompt).then(answers => {
@@ -32,32 +36,36 @@ export function settingsActions() {
 
 export function newBuildActions() { // TODO: needs language specific handling
     let language
-    let build
     inquirer.prompt(p.newBuildPrompt).then(answers => {
         language = answers.language
         if (answers.language === 'React') {
             inquirer.prompt(p.reactBuilds).then(answers => {
-                console.log(answers, 'test')
-                build = answers.reactBuilds
-                buildChooser(language, build)
+                if (answers.reactBuilds === styled(cmd.reset, 'yellow')) {
+                    newBuildActions()
+                } else if (answers.reactBuilds === styled(cmd.cancel, 'yellow')) {
+                    console.log('Goodbye')
+                } else {
+                    const path = [...bundlesDirectory, language.toLowerCase(), answers.reactBuilds.toLowerCase()]
+                    bundleNav(newBuildCommands, path)
+                }
             })
         } else if (answers.language === 'Vue') {
             inquirer.prompt(p.vueBuilds).then(answers => {
-                build = answers.vueBuilds
-                buildChooser(language, build)
+                if (answers.vueBuilds === styled(cmd.reset, 'yellow')) {
+                    newBuildActions()
+                } else if (answers.vueBuilds === styled(cmd.cancel, 'yellow')) {
+                    console.log('Goodbye')
+                } else {
+                    const path = [...bundlesDirectory, language.toLowerCase(), answers.vueBuilds.toLowerCase()]
+                    bundleNav(newBuildCommands, path)
+                }
             })
+        } else if (answers.language === 'Start Over') {
+            newBuildActions()
+        } else if (answers.language === styled(cmd.cancel, 'yellow')) {
+            console.log('Goodbye')
         }
     })
-}
-
-export function buildChooser(language, build) {
-    console.log('TRACE: buildChooser')
-    // const selectedBundlePath = [ // ATTN: it seems this is actually a constructed path, not a set of params!
-    //     bundlesDirectory,
-    //     language.toLowerCase(),
-    //     build.toLowerCase()
-    // ]
-    bundleNav(newBuildCommands, `${bundlesDirectory.join('/')}/${language.toLowerCase()}/${build.toLowerCase()}`)
 }
 
 export function newFileAction(path) {
@@ -90,7 +98,7 @@ export function newFolderAction(path) {
 }
 
 // ATTN: Planned feature - User Settings
-// export function setSourceAction() { 
+// export function setSourceAction() {
 //     inquirer.prompt(p.srcFolderPrompt).then(answers => {
 //         const data = readFileSync(`${halRootDirectory}/config.js`, 'utf8')
 //         const userVarReplace = `export const userRootDirectory = '${userRootDirectory}'`

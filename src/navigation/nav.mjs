@@ -64,7 +64,7 @@ function garbageCollectTempVars() {
 }
 
 function updateStyleAction(answers, libraryPath) {
-    libraryPath.push(clearANSI(answers.selection))
+    libraryPath.push(clearANSI(answers.contents))
     libraryPath.join('/').match(noExportRegExp) === null && (hasExport = true)
 
     if (libraryPath.join('/').match(styledComponentRegex)) { /* --------------- HAS STYLESHEET COMPONENTS ---------------- */
@@ -75,7 +75,7 @@ function updateStyleAction(answers, libraryPath) {
             return styleFiles
         }
         getStyleSheets().then(result => {
-            const relativeStyleSheetFilename = result.filter(entry => entry.includes(clearANSI(answers.selection.split('.')[0])))[0]
+            const relativeStyleSheetFilename = result.filter(entry => entry.includes(clearANSI(answers.contents.split('.')[0])))[0]
             tempStylesheetContent = readFileSync(`${libraryStyleDirectory.join('/')}/${relativeStyleSheetFilename}`, 'utf8')
             const primaryStyleSheetInitContent = readFileSync(`${projectMainStylesheet.join('/')}`).toString()
             handleNamingUpdatingAndNav(libraryPath, primaryStyleSheetInitContent)
@@ -114,8 +114,8 @@ function handleNamingUpdatingAndNav(libraryPath, primaryStyleSheetInitContent = 
 export var pathArray = relativeDirectoryArray
 
 export function nav(commandArray = defaultCommands, options = null) {
-
-    inquirer.prompt(p.generateDynamicPrompt(commandArray)).then((answers) => {
+    console.log('TRACE: nav')
+    inquirer.prompt(p.generateDynamicPrompt(commandArray, pathArray)).then((answers) => {
         if (answerMatch(answers.contents, cmd.up)) {
             pathArray = pathArray.slice(0, -1)
             nav(commandArray, options)
@@ -142,6 +142,7 @@ export function nav(commandArray = defaultCommands, options = null) {
         } else if (answerMatch(answers.contents, cmd.startBuild)) {
             writeNewBundle(pathArray, options)
         } else {
+            console.log('TRACE: file/folder')
             stat(`${pathArray.join('/')}/${clearANSI(answers.contents)}`, (err, stats) => {
                 if (err) {
                     console.error('Error getting file/folder information:', err)
@@ -183,24 +184,24 @@ export const libraryNavHandler = (commandArray = defaultCommands) => {
 
     function libraryNav(commandArray) {
         console.log('TRACE: libraryNav')
-        inquirer.prompt(p.generateDynamicLibraryPrompt(fromLibraryCommands, libraryPath)).then(answers => {
-            if (answerMatch(answers.selection, cmd.cancel)) {
+        inquirer.prompt(p.generateDynamicPrompt(fromLibraryCommands, libraryPath)).then(answers => {
+            if (answerMatch(answers.contents, cmd.cancel)) {
                 console.log('Goodbye!')
-            } else if (answerMatch(answers.selection, cmd.up)) {
+            } else if (answerMatch(answers.contents, cmd.up)) {
                 libraryPath = libraryPath.slice(0, -1)
                 libraryNav(commandArray)
             } else {
-                stat(`${libraryPath.join('/')}/${clearANSI(answers.selection)}`, (err, stats) => {
+                stat(`${libraryPath.join('/')}/${clearANSI(answers.contents)}`, (err, stats) => {
                     if (err) {
                         console.error('Error getting file/folder information:', err)
                     } else {
                         if (stats.isFile()) { // HANDLES FILE SELECTION
                             updateStyleAction(answers, libraryPath)
                         } else if (stats.isDirectory()) { // HANDLES DIRECTORY SELECTION
-                            if (directoriesContainingStyleSheets.includes(clearANSI(answers.selection))) {
-                                tempStyledComponentType = clearANSI(answers.selection)
+                            if (directoriesContainingStyleSheets.includes(clearANSI(answers.contents))) {
+                                tempStyledComponentType = clearANSI(answers.contents)
                             }
-                            libraryPath.push(clearANSI(answers.selection))
+                            libraryPath.push(clearANSI(answers.contents))
                             libraryNav(commandArray)
                         } else {
                             console.log('The selection is neither a file nor a folder.')
@@ -217,20 +218,21 @@ export const libraryNavHandler = (commandArray = defaultCommands) => {
 
 export function bundleNav(commandArray = defaultCommands, bundlePath) {
     console.log('TRACE: bundleNav', bundlePath)
-    inquirer.prompt(p.generateDynamicBundlePrompt(commandArray, bundlePath)).then(answers => {
-        if (answerMatch(answers.selection, cmd.reset)) {
+    inquirer.prompt(p.generateDynamicPrompt(commandArray, bundlePath)).then(answers => {
+        if (answerMatch(answers.contents, cmd.reset)) {
             newBuildActions()
-        } else if (answerMatch(answers.selection, cmd.cancel)) {
+        } else if (answerMatch(answers.contents, cmd.cancel)) {
             console.log('Goodbye!')
         } else {
-            stat(`${bundlePath}/${clearANSI(answers.selection)}`, (err, stats) => {
+            console.log('TRACE: file/folder from bundleNav')
+            stat(`${bundlePath.join('/')}/${clearANSI(answers.contents)}`, (err, stats) => {
                 if (err) {
                     console.error('Error getting file/folder information:', err)
                 } else {
                     const options = {
                         bundlePath: bundlePath,
                         // langBundleSelection: bundlePath,
-                        bundleSelection: answers.selection
+                        bundleSelection: answers.contents
                     }
                     nav(newBuildPlacement, options)
                 }

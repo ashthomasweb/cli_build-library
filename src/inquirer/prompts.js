@@ -1,7 +1,8 @@
 /* Configuration imports */
 import {
     defaultCommands,
-    mainMenuChoices as mmc
+    mainMenuChoices as mmc,
+    navCommandObject as cmd
 } from '../config/config.mjs'
 
 import { 
@@ -9,9 +10,13 @@ import {
     bundlesDirectory 
 } from '../config/pathVariables.mjs'
 
+import { styled } from '../styles/styles.mjs'
+
 /* Library and Helper imports */
 import { gatherDynamicFolderContents } from '../services/utilities.mjs'
-import { pathArray } from '../navigation/nav.mjs'
+// import { pathArray } from '../navigation/nav.mjs'
+
+import inquirer from 'inquirer'
 
 export const mainMenuPrompt = [{
     type: 'list',
@@ -49,21 +54,21 @@ export const newBuildPrompt = [{
     type: 'list',
     name: 'language',
     message: 'For What Language?',
-    choices: ['React', 'Vue', 'Ruby']
+    choices: [styled(cmd.reset, 'yellow'), styled(cmd.cancel, 'yellow'), new inquirer.Separator(), 'React', 'Vue', 'Ruby']
 }]
 
 export const reactBuilds = [{
     type: 'list',
     name: 'reactBuilds',
     message: 'Which Build Pack?',
-    choices: ['Parcel', 'Vite', 'Webpack']
+    choices: [styled(cmd.reset, 'yellow'), styled(cmd.cancel, 'yellow'), new inquirer.Separator(), 'Parcel', 'Vite', 'Webpack']
 }]
 
 export const vueBuilds = [{
     type: 'list',
     name: 'vueBuilds',
     message: 'Which Build Pack?',
-    choices: ['Unknown']
+    choices: [styled(cmd.reset, 'yellow'), styled(cmd.cancel, 'yellow'), new inquirer.Separator(), 'Unknown']
 }]
 
 export const newBundlePrompt = [{
@@ -72,25 +77,10 @@ export const newBundlePrompt = [{
     message: 'What would you like your root directory to be called?',
 }]
 
-// START Refactor
-export function generateDynamicPrompt(commandArray = defaultCommands) {
-    console.log('TRACE: genDynPrompt')
+export function generateDynamicPrompt(commandArray = defaultCommands, path) {
     const dynamicFolderPrompt = [{
         type: 'list',
         name: 'contents',
-        message: 'Navigation',
-        choices: () => gatherDynamicFolderContents(pathArray.join('/'), commandArray),
-        pageSize: 25,
-        default: commandArray.length
-    }]
-    return dynamicFolderPrompt
-}
-
-export function generateDynamicLibraryPrompt(commandArray = defaultCommands, path) {
-    console.log('TRACE: genDynLibraryPrompt')
-    const dynamicFolderPrompt = [{
-        type: 'list',
-        name: 'selection',
         message: 'Navigation',
         choices: () => gatherDynamicFolderContents(path.join('/'), commandArray),
         pageSize: 25,
@@ -98,20 +88,6 @@ export function generateDynamicLibraryPrompt(commandArray = defaultCommands, pat
     }]
     return dynamicFolderPrompt
 }
-
-export function generateDynamicBundlePrompt(commandArray = defaultCommands, bundlePath) {
-    console.log('TRACE: genDynBunPrompt', bundlePath)
-    const dynamicFolderPrompt = [{
-        type: 'list',
-        name: 'selection',
-        message: 'Navigation',
-        choices: () => gatherDynamicFolderContents(bundlePath, commandArray),
-        pageSize: 25,
-        default: commandArray.length
-    }]
-    return dynamicFolderPrompt
-}
-// END Refactor
 
 // Not currently in use - backlog
 // export const srcFolderPrompt = [{ // ATTN: Planned feature - User settings

@@ -27,7 +27,6 @@ export const styledComponentRegex = new RegExp(`(^|[/\\\\])(${directoriesContain
 export const noExportRegExp = new RegExp(`(^|[/\\\\])(${directoriesWithNoExport.join('|')})([/\\\\]|$)`)
 
 export async function gatherDynamicFolderContents(inputDirectory, commandOptions) {
-    console.log('TRACE: gatherDynFolderContents', inputDirectory, commandOptions)
     try {
         const styledCommands = commandOptions.map(entry => (
             styled(styled(entry, 'italics'), 'yellow')
@@ -67,7 +66,7 @@ export function fsWriteFile(path, newContent) {
 
 export function writeNewBundle(pathArray, options) {
     console.log('TRACE: writeNewBundle')
-    const sourcePath = `${options.bundlePath}/${clearANSI(options.bundleSelection)}`
+    const sourcePath = `${options.bundlePath.join('/')}/${clearANSI(options.bundleSelection)}`
     inquirer.prompt(p.newBundlePrompt).then(answers => {
         cp(sourcePath, `${pathArray.join('/')}/${answers.rootDirName}`, { recursive: true }, (err) => {
             if (err) {
