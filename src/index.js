@@ -11,24 +11,24 @@ import {
     // settingsActions, // ATTN: Feature planned - User settings
     newBuildActions 
 } from './inquirer/actions.mjs'
-import { libraryNavHandler, nav, navHandler } from './navigation/nav.mjs'
+import { navHandler } from './navigation/nav.mjs'
 
 inquirer.prompt(p.mainMenuPrompt).then(answers => {
 
     if (answers.main_menu === choices.createNew) {
-        nav(newFileFolderCommands)
+        // nav(newFileFolderCommands)
         navHandler('nav', newFileFolderCommands)
 
     } else if (answers.main_menu === choices.build) {
         newBuildActions()
     } else if (answers.main_menu === choices.copyFrom) {
-        libraryNavHandler(defaultCommands)
+        // libraryNavHandler(defaultCommands)
         navHandler('library', defaultCommands)
     } else if (answers.main_menu === choices.settings) {
         // settingsActions()
         console.log('Settings coming soon!')
     } else if (answers.main_menu === choices.explore) {
-        nav(standardNavCommands)
+        // nav(standardNavCommands)
         navHandler('nav', standardNavCommands)
 
     } else if (answers.main_menu === choices.help) {

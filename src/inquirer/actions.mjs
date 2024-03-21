@@ -17,7 +17,7 @@ import {
 import inquirer from "inquirer"
 import * as p from './prompts.js'
 import { writeFile, mkdir } from "fs"
-import { bundleNav, nav, navHandler } from "../navigation/nav.mjs"
+import { navHandler } from "../navigation/nav.mjs"
 import { bundlesDirectory } from "../config/pathVariables.mjs"
 import { styled } from "../styles/styles.mjs"
 
@@ -45,7 +45,7 @@ export function newBuildActions() { // TODO: needs language specific handling
                     const options = {
                         bundlePath: [...bundlesDirectory, language.toLowerCase(), answers.reactBuilds.toLowerCase()]
                     }
-                    bundleNav(newBuildCommands, options.bundlePath)
+                    // bundleNav(newBuildCommands, options.bundlePath)
                     navHandler('bundle', newBuildCommands, options)
                 }
             })
@@ -59,7 +59,7 @@ export function newBuildActions() { // TODO: needs language specific handling
                     const options = {
                         bundlePath: [...bundlesDirectory, language.toLowerCase(), answers.vueBuilds.toLowerCase()]
                     }
-                    bundleNav(newBuildCommands, options.bundlePath)
+                    // bundleNav(newBuildCommands, options.bundlePath)
                     navHandler('bundle', newBuildCommands, options)
                 }
             })
