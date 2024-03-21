@@ -1,0 +1,1 @@
+export const userRootDirectory = 'C:/Users/rideo/Dropbox/Code/projects/__active/project_cli/_src-folder/cli/hal/src/config/userSetRootPath.mjs'

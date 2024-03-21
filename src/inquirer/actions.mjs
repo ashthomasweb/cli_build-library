@@ -7,24 +7,19 @@ import {
     navCommandObject as cmd,
 } from "../config/config.mjs"
 
-// ATTN: Planned feature - User Settings
-// import { 
-//     halRootDirectory, 
-//     userRootDirectory 
-// } from "../config/pathVariables.mjs"
-
 /* Library and Helper imports */
 import inquirer from "inquirer"
 import * as p from './prompts.js'
 import { writeFile, mkdir } from "fs"
 import { navHandler } from "../navigation/nav.mjs"
-import { bundlesDirectory } from "../config/pathVariables.mjs"
+import { bundlesDirectory, halRootDirectory } from "../config/pathVariables.mjs"
 import { styled } from "../styles/styles.mjs"
+import { fsWriteFile } from "../services/utilities.mjs"
 
 export function settingsActions() {
     inquirer.prompt(p.settingsPrompt).then(answers => {
         if (answers.settings === 'Set /src folder') {
-            nav(settingsCommands)
+            navHandler('nav', settingsCommands)
         } else if (answers.settings === 'Reset /src folder') {
             console.log('Feature Coming Soon!')
         }
@@ -100,14 +95,14 @@ export function newFolderAction(path) {
     })
 }
 
-// ATTN: Planned feature - User Settings
-// export function setSourceAction() {
-//     inquirer.prompt(p.srcFolderPrompt).then(answers => {
-//         const data = readFileSync(`${halRootDirectory}/config.js`, 'utf8')
-//         const userVarReplace = `export const userRootDirectory = '${userRootDirectory}'`
-//         const varPrefix = 'export const userRootDirectory ='
-//         const regex = new RegExp(userVarReplace, 'g')
-//         const newContent = data.replace(regex, `${varPrefix} '${answers.src_folder}'`).toString()
-//         fsWriteFile(`${halRootDirectory}/config.js`, newContent)
-//     })
-// }
+export function setSourceAction(pathArray) {
+    console.log(pathArray)
+    const userRootPath = [...halRootDirectory, 'src', 'config', 'userSetRootPath.mjs']
+    // const data = readFileSync(userRootPath, 'utf8')
+    // const userVarReplace = `export const userRootDirectory = '${userRootDirectory}'`
+    // const regex = new RegExp(userVarReplace, 'g')
+    const varPrefix = 'export const userRootDirectory = '
+    const newContent = `${varPrefix}'${userRootPath.join('/')}'`
+    console.log(newContent)
+    fsWriteFile(userRootPath.join('/'), newContent)
+}

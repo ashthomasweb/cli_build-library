@@ -71,6 +71,20 @@ export const newBundlePrompt = [{
     message: 'What would you like your root directory to be called?',
 }]
 
+
+export const srcFolderPrompt = [{
+    type: 'input',
+    name: 'src_folder',
+    message: 'Type path of your /src folder',
+}]
+
+export const settingsPrompt = [{
+    type: 'list',
+    name: 'settings',
+    message: 'Settings coming soon!',
+    choices: ['Set /src folder', 'Reset /src folder', 'Set style sheet options']
+}]
+
 export function generateDynamicPrompt(commandArray = defaultCommands, path) {
     const dynamicFolderPrompt = [{
         type: 'list',
@@ -82,20 +96,3 @@ export function generateDynamicPrompt(commandArray = defaultCommands, path) {
     }]
     return dynamicFolderPrompt
 }
-
-
-
-// Not currently in use - backlog
-
-// export const srcFolderPrompt = [{ // ATTN: Planned feature - User settings
-//     type: 'input',
-//     name: 'src_folder',
-//     message: 'Type path of your /src folder',
-// }]
-
-// export const settingsPrompt = [{ // ATTN: Planned feature - User settings
-//     type: 'list',
-//     name: 'settings',
-//     message: 'Settings coming soon!',
-//     choices: ['Set /src folder', 'Reset /src folder', 'Set style sheet options']
-// }]

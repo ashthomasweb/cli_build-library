@@ -3,6 +3,7 @@ import { relativeDirectoryArray } from "./relativeDirectory.mjs"
 /* Primary application directories */
 export const componentDirectory = [...relativeDirectoryArray, 'src', 'modularAssets', 'library'] // NEEDS to reference /INSTALLLOCATION/node_modules/hal/library !!
 export const bundlesDirectory = [...componentDirectory, 'bundles']
+export const halRootDirectory = [...relativeDirectoryArray]
 
 /* Used in prompts for lookups */
 export const libraryStyleDirectory = [...relativeDirectoryArray, 'src', 'modularAssets', 'stylesheets'] // 'Library' folder needs structure and better naming convention
@@ -10,7 +11,3 @@ export const projectComponentStylesFolder = [...relativeDirectoryArray, '_testDi
 export const projectMainStylesheet = [...relativeDirectoryArray, '_testDirs', 'aNewTestFolder', 'scss', 'styles.scss'] // !!!! NEEDS to be set to best practice structure along with proper relativeDirectory and not hard-coded
 
 
-// ATTN: Planned feature - User Settings
-// /* User settable directories */
-// export const halRootDirectory = 'c:/Users/rideo/Dropbox/Code/projects/cli/hal' // Currently not in use - referenced in setSourceAction()
-// export const userRootDirectory = ''// Currently not in use?? - referenced in setSourceAction()

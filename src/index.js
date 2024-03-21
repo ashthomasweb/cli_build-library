@@ -8,7 +8,7 @@ import {
 import inquirer from 'inquirer'
 import * as p from './inquirer/prompts.js'
 import { 
-    // settingsActions, // ATTN: Feature planned - User settings
+    settingsActions,
     newBuildActions 
 } from './inquirer/actions.mjs'
 import { navHandler } from './navigation/nav.mjs'
@@ -25,8 +25,8 @@ inquirer.prompt(p.mainMenuPrompt).then(answers => {
         // libraryNavHandler(defaultCommands)
         navHandler('library', defaultCommands)
     } else if (answers.main_menu === choices.settings) {
-        // settingsActions()
-        console.log('Settings coming soon!')
+        settingsActions()
+        // console.log('Settings coming soon!')
     } else if (answers.main_menu === choices.explore) {
         // nav(standardNavCommands)
         navHandler('nav', standardNavCommands)

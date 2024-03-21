@@ -21,7 +21,7 @@ import { relativeDirectoryArray } from "../config/relativeDirectory.mjs"
 import inquirer from "inquirer"
 import * as p from '../inquirer/prompts.js'
 import {
-    // setSourceAction, // ATTN: Planned feature - User Settings
+    setSourceAction,
     newFileAction,
     newFolderAction,
     newBuildActions
@@ -69,7 +69,6 @@ export function navHandler(type, commands, options = null) {
     if (type === 'nav') (pathArray = [...relativeDirectoryArray])
     if (type === 'library') (pathArray = [...componentDirectory])
     if (type === 'bundle') (pathArray = [...options.bundlePath])
-
 
     function updateStyleAction(answers, pathArray) { // Issue with scope of pathArray
         pathArray.push(clearANSI(answers.contents))
@@ -162,7 +161,7 @@ export function navHandler(type, commands, options = null) {
         })
     }
 
-    const bundleStat = (pathArray, answers) => {
+    const bundleStat = (pathArray, answers, options) => {
         console.log('TRACE: bundleStat')
         stat(`${pathArray.join('/')}/${clearANSI(answers.contents)}`, (err, stats) => {
             if (err) {
@@ -171,7 +170,7 @@ export function navHandler(type, commands, options = null) {
                 const options = {
                     bundlePath: [...pathArray],
                     bundleSelection: answers.contents,
-                    resetPath: true
+                    resetPath: options.count > 1 ? false : true // NOT WORKING!! 
                 }
                 // TODO: it would be better to pass the build language and type directly instead of manipulating the path
                 nav(newBuildPlacement, options)
@@ -186,8 +185,6 @@ export function navHandler(type, commands, options = null) {
 
     // nav logic
     function nav(commandArray = defaultCommands, options = null) {
-        if (options?.resetPath) pathArray = [...relativeDirectoryArray] // ATTN: user root needs to be implemented!
-        options.resetPath = false // ATTN: ensures the path reset only occurs for one navigation loop at a time
         inquirer.prompt(p.generateDynamicPrompt(commandArray, pathArray)).then((answers) => {
             if (answerMatch(answers.contents, cmd.up)) {
                 pathArray = pathArray.slice(0, -1)
@@ -202,8 +199,8 @@ export function navHandler(type, commands, options = null) {
                 newFolderAction(pathArray)
             } else if (answerMatch(answers.contents, cmd.startBuild)) {
                 writeNewBundle(pathArray, options)
-                // } else if (answerMatch(answers.contents, cmd.setSRC)) { // ATTN: Planned feature - User Settings
-                //     setSourceAction()
+            } else if (answerMatch(answers.contents, cmd.setSRC)) {
+                setSourceAction(pathArray)
             } else {
                 directoryHandler(pathArray, answers, commandArray, options)
                 // navStat(pathArray, answers, commandArray, options)
