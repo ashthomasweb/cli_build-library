@@ -5,16 +5,10 @@ import {
     navCommandObject as cmd
 } from '../config/config.mjs'
 
-import { 
-    componentDirectory, 
-    bundlesDirectory 
-} from '../config/pathVariables.mjs'
-
 import { styled } from '../styles/styles.mjs'
 
 /* Library and Helper imports */
 import { gatherDynamicFolderContents } from '../services/utilities.mjs'
-// import { pathArray } from '../navigation/nav.mjs'
 
 import inquirer from 'inquirer'
 
@@ -89,7 +83,10 @@ export function generateDynamicPrompt(commandArray = defaultCommands, path) {
     return dynamicFolderPrompt
 }
 
+
+
 // Not currently in use - backlog
+
 // export const srcFolderPrompt = [{ // ATTN: Planned feature - User settings
 //     type: 'input',
 //     name: 'src_folder',

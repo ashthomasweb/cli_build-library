@@ -11,7 +11,6 @@ import {
 import {
     libraryStyleDirectory,
     componentDirectory,
-    bundlesDirectory,
     projectComponentStylesFolder,
     projectMainStylesheet,
 } from "../config/pathVariables.mjs"
@@ -111,10 +110,65 @@ function handleNamingUpdatingAndNav(libraryPath, primaryStyleSheetInitContent = 
     }
 }
 
-export var pathArray = relativeDirectoryArray
+export function navHandler(type, commands, options) {
+    let path
+    if (type === 'nav') (path = [...relativeDirectoryArray])
+    if (type === 'library') (path = [...componentDirectory])
+    if (type === 'bundle') (path = [...options.bundlePath])
+
+    // nav logic
+
+    console.log('TRACE: navHandler', '\n', 'path: ', path, '\n', 'type: ', type, '\n', 'options: ', options)
+    // in the 'else' block for the 'stat' {
+        type === 'nav' && navStat()
+        type === 'library' && libraryStat()
+        type === 'bundle' && bundleStat()
+    // }
+}
+
+function navStat(pathArray, answers, commandArray, options = null) {
+    console.log('TRACE: navStat')
+    stat(`${pathArray.join('/')}/${clearANSI(answers.contents)}`, (err, stats) => {
+        if (err) {
+            console.error('Error getting file/folder information:', err)
+        } else {
+            if (stats.isFile()) {
+                console.log('No action available') // THIS IS A USELESS ENDPOINT FOR THE USER
+            } else if (stats.isDirectory()) {
+                pathArray.push(clearANSI(answers.contents))
+                nav(commandArray, options)
+            } else {
+                console.log('The selection is neither a file nor a folder.')
+            }
+        }
+    })
+}
+
+function libraryStat() {
+    console.log('TRACE: libraryStat')
+}
+
+function bundleStat() {
+    console.log('TRACE: bundleStat')
+}
+
+function placeComponentAction(pathArray) {
+    try {
+        fsWriteFile(`${pathArray.join('/')}/${tempComponentFilename}`, tempComponentContent) // Write new component
+        if (tempStylesheetContent !== null) {
+            fsWriteFile(`${projectComponentStylesFolder.join('/')}/${tempStyledComponentType}/${tempComponentFilename.split('.')[0]}.scss`, tempStylesheetContent) // Write new scss file
+            fsWriteFile(`${projectMainStylesheet.join('/')}`, tempPrimaryStylesheetContent) // Write updated primary stylesheet
+        }
+    } catch (error) {
+        console.log('Something went wrong!', error)
+    } finally {
+        garbageCollectTempVars()
+    }
+}
+
+export var pathArray = relativeDirectoryArray // TODO: no longer need to be exported
 
 export function nav(commandArray = defaultCommands, options = null) {
-    console.log('TRACE: nav')
     inquirer.prompt(p.generateDynamicPrompt(commandArray, pathArray)).then((answers) => {
         if (answerMatch(answers.contents, cmd.up)) {
             pathArray = pathArray.slice(0, -1)
@@ -122,68 +176,26 @@ export function nav(commandArray = defaultCommands, options = null) {
         } else if (answerMatch(answers.contents, cmd.cancel)) {
             console.log('Goodbye!')
         } else if (answerMatch(answers.contents, cmd.place)) {
-            try {
-                fsWriteFile(`${pathArray.join('/')}/${tempComponentFilename}`, tempComponentContent) // Write new component
-                if (tempStylesheetContent !== null) {
-                    fsWriteFile(`${projectComponentStylesFolder.join('/')}/${tempStyledComponentType}/${tempComponentFilename.split('.')[0]}.scss`, tempStylesheetContent) // Write new scss file
-                    fsWriteFile(`${projectMainStylesheet.join('/')}`, tempPrimaryStylesheetContent) // Write updated primary stylesheet
-                }
-            } catch (error) {
-                console.log('Something went wrong!', error)
-            } finally {
-                garbageCollectTempVars()
-            }
-            // } else if (answerMatch(answers.contents, cmd.setSRC)) { // ATTN: Planned feature - User Settings
-            //     setSourceAction()
+            placeComponentAction(pathArray)
         } else if (answerMatch(answers.contents, cmd.newFile)) {
             newFileAction(pathArray)
         } else if (answerMatch(answers.contents, cmd.newFolder)) {
             newFolderAction(pathArray)
         } else if (answerMatch(answers.contents, cmd.startBuild)) {
             writeNewBundle(pathArray, options)
+        // } else if (answerMatch(answers.contents, cmd.setSRC)) { // ATTN: Planned feature - User Settings
+            //     setSourceAction()
         } else {
-            console.log('TRACE: file/folder')
-            stat(`${pathArray.join('/')}/${clearANSI(answers.contents)}`, (err, stats) => {
-                if (err) {
-                    console.error('Error getting file/folder information:', err)
-                } else {
-                    if (stats.isFile()) {
-                        console.log('No action available') // THIS IS A USELESS ENDPOINT FOR THE USER
-                    } else if (stats.isDirectory()) {
-                        pathArray.push(clearANSI(answers.contents))
-                        nav(commandArray, options)
-                    } else {
-                        console.log('The selection is neither a file nor a folder.')
-                    }
-                }
-            })
+            navStat(pathArray, answers, commandArray, options)
         }
     })
 }
 
-/*
-Each of the nav functions has it's own path array. This array gets modified and passed into the dynamic
-prompt function whenever a new folder is selected. The below path reference to the imported - in this 
-example - 'componentDirectory' doesn't have it's own reference value - the dynamic prompt is also reading 
-this 'componentDirectory' each time the function is run through during standard navigation.
-
-Each time the package is run from the initial cli menu the 'componentDirectory' starts fresh from the 
-initially defined path.
-
-This issue is identical in all three nav operations, 'nav' - 'libraryNav' - 'bundleNav'
-
-Could potentially be solved by spreading the 'componentDirectory', creating a new reference, and passing
-that new reference into the dynamicPrompt function as an option. This could eliminate the three separate 
-dynamicPrompt functions, turning them into one handler function with options.
-
-*/
-
 export const libraryNavHandler = (commandArray = defaultCommands) => {
 
-    let libraryPath = [...componentDirectory] // THIS IS WHERE THE ISSUE LIES FOR CONTINUOUS NAV OPERATIONS .. fix in progress
+    let libraryPath = [...componentDirectory]
 
     function libraryNav(commandArray) {
-        console.log('TRACE: libraryNav')
         inquirer.prompt(p.generateDynamicPrompt(fromLibraryCommands, libraryPath)).then(answers => {
             if (answerMatch(answers.contents, cmd.cancel)) {
                 console.log('Goodbye!')
@@ -214,24 +226,20 @@ export const libraryNavHandler = (commandArray = defaultCommands) => {
     libraryNav(commandArray)
 }
 
-// const bundlePath = bundlesDirectory
 
 export function bundleNav(commandArray = defaultCommands, bundlePath) {
-    console.log('TRACE: bundleNav', bundlePath)
     inquirer.prompt(p.generateDynamicPrompt(commandArray, bundlePath)).then(answers => {
         if (answerMatch(answers.contents, cmd.reset)) {
             newBuildActions()
         } else if (answerMatch(answers.contents, cmd.cancel)) {
             console.log('Goodbye!')
         } else {
-            console.log('TRACE: file/folder from bundleNav')
             stat(`${bundlePath.join('/')}/${clearANSI(answers.contents)}`, (err, stats) => {
                 if (err) {
                     console.error('Error getting file/folder information:', err)
                 } else {
                     const options = {
                         bundlePath: bundlePath,
-                        // langBundleSelection: bundlePath,
                         bundleSelection: answers.contents
                     }
                     nav(newBuildPlacement, options)

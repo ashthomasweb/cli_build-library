@@ -16,12 +16,9 @@ import {
 /* Library and Helper imports */
 import inquirer from "inquirer"
 import * as p from './prompts.js'
-import { readFileSync, writeFile, mkdir } from "fs"
-import { fsWriteFile } from "../services/utilities.mjs"
-import { bundleNav, nav } from "../navigation/nav.mjs"
+import { writeFile, mkdir } from "fs"
+import { bundleNav, nav, navHandler } from "../navigation/nav.mjs"
 import { bundlesDirectory } from "../config/pathVariables.mjs"
-import { clearANSI } from "../styles/styles.mjs"
-import { trace } from "console"
 import { styled } from "../styles/styles.mjs"
 
 export function settingsActions() {
@@ -45,8 +42,11 @@ export function newBuildActions() { // TODO: needs language specific handling
                 } else if (answers.reactBuilds === styled(cmd.cancel, 'yellow')) {
                     console.log('Goodbye')
                 } else {
-                    const path = [...bundlesDirectory, language.toLowerCase(), answers.reactBuilds.toLowerCase()]
-                    bundleNav(newBuildCommands, path)
+                    const options = {
+                        bundlePath: [...bundlesDirectory, language.toLowerCase(), answers.reactBuilds.toLowerCase()]
+                    }
+                    bundleNav(newBuildCommands, options.bundlePath)
+                    navHandler('bundle', newBuildCommands, options)
                 }
             })
         } else if (answers.language === 'Vue') {
@@ -56,8 +56,11 @@ export function newBuildActions() { // TODO: needs language specific handling
                 } else if (answers.vueBuilds === styled(cmd.cancel, 'yellow')) {
                     console.log('Goodbye')
                 } else {
-                    const path = [...bundlesDirectory, language.toLowerCase(), answers.vueBuilds.toLowerCase()]
-                    bundleNav(newBuildCommands, path)
+                    const options = {
+                        bundlePath: [...bundlesDirectory, language.toLowerCase(), answers.vueBuilds.toLowerCase()]
+                    }
+                    bundleNav(newBuildCommands, options.bundlePath)
+                    navHandler('bundle', newBuildCommands, options)
                 }
             })
         } else if (answers.language === 'Start Over') {

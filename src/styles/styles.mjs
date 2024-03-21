@@ -10,7 +10,6 @@ export function styled(input, style) {
 }
 
 export function clearANSI(input) {
-    console.log('ansi', input)
     const ansiRegex = /\x1b\[[0-9;]*m/g
     return input.replace(ansiRegex, '')
 }
