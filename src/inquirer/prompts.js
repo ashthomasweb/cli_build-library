@@ -72,17 +72,17 @@ export const newBundlePrompt = [{
 }]
 
 
-export const srcFolderPrompt = [{
-    type: 'input',
-    name: 'src_folder',
-    message: 'Type path of your /src folder',
-}]
+// export const srcFolderPrompt = [{ // UNUSED - retire?
+//     type: 'input',
+//     name: 'src_folder',
+//     message: 'Type path of your /src folder',
+// }]
 
 export const settingsPrompt = [{
     type: 'list',
     name: 'settings',
-    message: 'Settings coming soon!',
-    choices: ['Set /src folder'] // 'Reset /src folder', 'Set style sheet options'
+    message: 'Select setting to set:',
+    choices: ['Set project (parent of /src) folder'] // 'Reset /src folder', 'Set style sheet options'
 }]
 
 export function generateDynamicPrompt(commandArray = defaultCommands, path) {

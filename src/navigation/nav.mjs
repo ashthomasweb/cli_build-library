@@ -74,6 +74,8 @@ export function navHandler(type, commands, options = null) {
     if (type === 'library') (pathArray = [...componentDirectory])
     if (type === 'bundle') (pathArray = [...options.chosenBundlePath])
 
+    if (options?.bundleIsSelected && userRootDirectory !== '') (pathArray = [...userRootDirectory])
+
     function updateStyleAction(answers, pathArray) { // Issue with scope of pathArray
         pathArray.push(clearANSI(answers.contents))
         pathArray.join('/').match(noExportRegExp) === null && (hasExport = true)

@@ -18,7 +18,7 @@ export const navCommandObject = {
     cancel: 'Cancel',
     reset: 'Start Over',
     place: 'Place Here',
-    setSRC: 'Set /src Here',
+    setSRC: 'Set project (parent of /src) folder',
     newFile: 'New File In Current Directory',
     newFolder: 'Create New Folder In Current Directory',
     startBuild: 'Create /src Directory Here'
