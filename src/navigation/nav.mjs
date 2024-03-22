@@ -39,7 +39,7 @@ import {
 } from "../services/utilities.mjs"
 
 import { clearANSI } from '../styles/styles.mjs'
-import { trace } from "console"
+import { userRootDirectory } from "../config/userSetRootPath.mjs"
 
 /* Local variable used to store temporary values */
 var tempComponentFilename = null
@@ -66,9 +66,12 @@ function garbageCollectTempVars() {
 export function navHandler(type, commands, options = null) {
     let pathArray
     let directoryHandler
+    let bundlePath = [...userRootDirectory] || [relativeDirectoryArray[0]]
+    console.log(bundlePath)
+    console.log(typeof(bundlePath))
     if (type === 'nav') (pathArray = [...relativeDirectoryArray])
     if (type === 'library') (pathArray = [...componentDirectory])
-    if (type === 'bundle') (pathArray = [...options.bundlePath])
+    if (type === 'bundle') (pathArray = [...bundlePath])
 
     function updateStyleAction(answers, pathArray) { // Issue with scope of pathArray
         pathArray.push(clearANSI(answers.contents))
@@ -161,16 +164,16 @@ export function navHandler(type, commands, options = null) {
         })
     }
 
-    const bundleStat = (pathArray, answers, options) => {
+    const bundleStat = (pathArray, answers, passedOptions) => {
         console.log('TRACE: bundleStat')
         stat(`${pathArray.join('/')}/${clearANSI(answers.contents)}`, (err, stats) => {
             if (err) {
                 console.error('Error getting file/folder information:', err)
             } else {
+                pathArray.push(clearANSI(answers.contents))
                 const options = {
-                    bundlePath: [...pathArray],
-                    bundleSelection: answers.contents,
-                    resetPath: options.count > 1 ? false : true // NOT WORKING!! 
+                    ...passedOptions,
+                    bundleSrcFolder: pathArray,
                 }
                 // TODO: it would be better to pass the build language and type directly instead of manipulating the path
                 nav(newBuildPlacement, options)
@@ -182,8 +185,6 @@ export function navHandler(type, commands, options = null) {
     type === 'library' && (directoryHandler = libraryStat)
     type === 'bundle' && (directoryHandler = bundleStat)
 
-
-    // nav logic
     function nav(commandArray = defaultCommands, options = null) {
         inquirer.prompt(p.generateDynamicPrompt(commandArray, pathArray)).then((answers) => {
             if (answerMatch(answers.contents, cmd.up)) {
@@ -203,15 +204,12 @@ export function navHandler(type, commands, options = null) {
                 setSourceAction(pathArray)
             } else {
                 directoryHandler(pathArray, answers, commandArray, options)
-                // navStat(pathArray, answers, commandArray, options)
             }
         })
     }
     nav(commands, options)
 
 }
-
-
 
 function placeComponentAction(pathArray) {
     try {
@@ -226,89 +224,6 @@ function placeComponentAction(pathArray) {
         garbageCollectTempVars()
     }
 }
-
-// export var pathArray = relativeDirectoryArray // TODO: no longer need to be exported
-
-// export function nav(commandArray = defaultCommands, options = null) {
-//     inquirer.prompt(p.generateDynamicPrompt(commandArray, pathArray)).then((answers) => {
-//         if (answerMatch(answers.contents, cmd.up)) {
-//             pathArray = pathArray.slice(0, -1)
-//             nav(commandArray, options)
-//         } else if (answerMatch(answers.contents, cmd.cancel)) {
-//             console.log('Goodbye!')
-//         } else if (answerMatch(answers.contents, cmd.place)) {
-//             placeComponentAction(pathArray)
-//         } else if (answerMatch(answers.contents, cmd.newFile)) {
-//             newFileAction(pathArray)
-//         } else if (answerMatch(answers.contents, cmd.newFolder)) {
-//             newFolderAction(pathArray)
-//         } else if (answerMatch(answers.contents, cmd.startBuild)) {
-//             writeNewBundle(pathArray, options)
-//             // } else if (answerMatch(answers.contents, cmd.setSRC)) { // ATTN: Planned feature - User Settings
-//             //     setSourceAction()
-//         } else {
-//             navStat(pathArray, answers, commandArray, options)
-//         }
-//     })
-// }
-
-// export const libraryNavHandler = (commandArray = defaultCommands) => {
-
-//     let libraryPath = [...componentDirectory]
-
-//     function libraryNav(commandArray) {
-//         inquirer.prompt(p.generateDynamicPrompt(fromLibraryCommands, libraryPath)).then(answers => {
-//             if (answerMatch(answers.contents, cmd.cancel)) {
-//                 console.log('Goodbye!')
-//             } else if (answerMatch(answers.contents, cmd.up)) {
-//                 libraryPath = libraryPath.slice(0, -1)
-//                 libraryNav(commandArray)
-//             } else {
-//                 stat(`${libraryPath.join('/')}/${clearANSI(answers.contents)}`, (err, stats) => {
-//                     if (err) {
-//                         console.error('Error getting file/folder information:', err)
-//                     } else {
-//                         if (stats.isFile()) { // HANDLES FILE SELECTION
-//                             updateStyleAction(answers, libraryPath)
-//                         } else if (stats.isDirectory()) { // HANDLES DIRECTORY SELECTION
-//                             if (directoriesContainingStyleSheets.includes(clearANSI(answers.contents))) {
-//                                 tempStyledComponentType = clearANSI(answers.contents)
-//                             }
-//                             libraryPath.push(clearANSI(answers.contents))
-//                             libraryNav(commandArray)
-//                         } else {
-//                             console.log('The selection is neither a file nor a folder.')
-//                         }
-//                     }
-//                 })
-//             }
-//         })
-//     }
-//     libraryNav(commandArray)
-// }
-
-
-// export function bundleNav(commandArray = defaultCommands, bundlePath) {
-//     inquirer.prompt(p.generateDynamicPrompt(commandArray, bundlePath)).then(answers => {
-//         if (answerMatch(answers.contents, cmd.reset)) {
-//             newBuildActions()
-//         } else if (answerMatch(answers.contents, cmd.cancel)) {
-//             console.log('Goodbye!')
-//         } else {
-//             stat(`${bundlePath.join('/')}/${clearANSI(answers.contents)}`, (err, stats) => {
-//                 if (err) {
-//                     console.error('Error getting file/folder information:', err)
-//                 } else {
-//                     const options = {
-//                         bundlePath: bundlePath,
-//                         bundleSelection: answers.contents
-//                     }
-//                     nav(newBuildPlacement, options)
-//                 }
-//             })
-//         }
-//     })
-// }
 
 /* DEV FUNCTIONS */
 

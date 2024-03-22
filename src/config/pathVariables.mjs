@@ -9,5 +9,3 @@ export const halRootDirectory = [...relativeDirectoryArray]
 export const libraryStyleDirectory = [...relativeDirectoryArray, 'src', 'modularAssets', 'stylesheets'] // 'Library' folder needs structure and better naming convention
 export const projectComponentStylesFolder = [...relativeDirectoryArray, '_testDirs', 'aNewTestFolder', 'scss'] // !!!! NEEDS to be set to best practice structure along with proper relativeDirectory and not hard-coded
 export const projectMainStylesheet = [...relativeDirectoryArray, '_testDirs', 'aNewTestFolder', 'scss', 'styles.scss'] // !!!! NEEDS to be set to best practice structure along with proper relativeDirectory and not hard-coded
-
-

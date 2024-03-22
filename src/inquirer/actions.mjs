@@ -3,6 +3,7 @@
 import {
     settingsCommands,
     newBuildCommands,
+    newBuildPlacement,
     newFileFolderCommands,
     navCommandObject as cmd,
 } from "../config/config.mjs"
@@ -38,10 +39,10 @@ export function newBuildActions() { // TODO: needs language specific handling
                     console.log('Goodbye')
                 } else {
                     const options = {
-                        bundlePath: [...bundlesDirectory, language.toLowerCase(), answers.reactBuilds.toLowerCase()]
+                        chosenBundlePath: [...bundlesDirectory, language.toLowerCase(), answers.reactBuilds.toLowerCase()],
+                        bundleSelection: answers.selection
                     }
-                    // bundleNav(newBuildCommands, options.bundlePath)
-                    navHandler('bundle', newBuildCommands, options)
+                    navHandler('bundle', newBuildPlacement, options) // Skipped a step here...
                 }
             })
         } else if (answers.language === 'Vue') {
@@ -52,10 +53,9 @@ export function newBuildActions() { // TODO: needs language specific handling
                     console.log('Goodbye')
                 } else {
                     const options = {
-                        bundlePath: [...bundlesDirectory, language.toLowerCase(), answers.vueBuilds.toLowerCase()]
+                        chosenBundlePath: [...bundlesDirectory, language.toLowerCase(), answers.vueBuilds.toLowerCase()]
                     }
-                    // bundleNav(newBuildCommands, options.bundlePath)
-                    navHandler('bundle', newBuildCommands, options)
+                    navHandler('bundle', newBuildPlacement, options)
                 }
             })
         } else if (answers.language === 'Start Over') {
@@ -98,6 +98,11 @@ export function newFolderAction(path) {
 export function setSourceAction(pathArray) {
     const userRootPath = [...halRootDirectory, 'src', 'config', 'userSetRootPath.mjs']
     const varPrefix = 'export const userRootDirectory = '
-    const newContent = `${varPrefix}'${pathArray.join('/')}'`
+    let arrayAsString = `[`
+    pathArray.forEach(entry => {
+        arrayAsString = arrayAsString +`'${entry}', `
+    })
+    arrayAsString = arrayAsString + `]`
+    const newContent = `${varPrefix}${arrayAsString}`
     fsWriteFile(userRootPath.join('/'), newContent)
 }
