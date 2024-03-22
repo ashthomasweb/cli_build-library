@@ -96,13 +96,8 @@ export function newFolderAction(path) {
 }
 
 export function setSourceAction(pathArray) {
-    console.log(pathArray)
     const userRootPath = [...halRootDirectory, 'src', 'config', 'userSetRootPath.mjs']
-    // const data = readFileSync(userRootPath, 'utf8')
-    // const userVarReplace = `export const userRootDirectory = '${userRootDirectory}'`
-    // const regex = new RegExp(userVarReplace, 'g')
     const varPrefix = 'export const userRootDirectory = '
-    const newContent = `${varPrefix}'${userRootPath.join('/')}'`
-    console.log(newContent)
+    const newContent = `${varPrefix}'${pathArray.join('/')}'`
     fsWriteFile(userRootPath.join('/'), newContent)
 }

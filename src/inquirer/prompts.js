@@ -82,7 +82,7 @@ export const settingsPrompt = [{
     type: 'list',
     name: 'settings',
     message: 'Settings coming soon!',
-    choices: ['Set /src folder', 'Reset /src folder', 'Set style sheet options']
+    choices: ['Set /src folder'] // 'Reset /src folder', 'Set style sheet options'
 }]
 
 export function generateDynamicPrompt(commandArray = defaultCommands, path) {

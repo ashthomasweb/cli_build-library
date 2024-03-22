@@ -22,15 +22,11 @@ inquirer.prompt(p.mainMenuPrompt).then(answers => {
     } else if (answers.main_menu === choices.build) {
         newBuildActions()
     } else if (answers.main_menu === choices.copyFrom) {
-        // libraryNavHandler(defaultCommands)
         navHandler('library', defaultCommands)
     } else if (answers.main_menu === choices.settings) {
         settingsActions()
-        // console.log('Settings coming soon!')
     } else if (answers.main_menu === choices.explore) {
-        // nav(standardNavCommands)
         navHandler('nav', standardNavCommands)
-
     } else if (answers.main_menu === choices.help) {
         console.log('Help docs coming soon!')
     }
