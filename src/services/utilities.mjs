@@ -66,7 +66,7 @@ export function fsWriteFile(path, newContent) {
 
 export function writeNewBundle(pathArray, options) {
     console.log('TRACE: writeNewBundle')
-    const sourcePath = `${options.chosenBundlePath.join('/')}`
+    const sourcePath = `${options.chosenBundlePath.join('/')}/${clearANSI(options.bundleSelection)}`
     inquirer.prompt(p.newBundlePrompt).then(answers => {
         cp(sourcePath, `${pathArray.join('/')}/${answers.rootDirName}`, { recursive: true }, (err) => {
             if (err) {

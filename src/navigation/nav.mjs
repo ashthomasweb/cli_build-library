@@ -64,14 +64,15 @@ function garbageCollectTempVars() {
 
 
 export function navHandler(type, commands, options = null) {
+    console.log(options)
     let pathArray
     let directoryHandler
-    let bundlePath = [...userRootDirectory] || [relativeDirectoryArray[0]]
-    console.log(bundlePath)
-    console.log(typeof(bundlePath))
+    // let bundlePath = [...bundlesDirectory]
+    // console.log(bundlePath)
+    // console.log(typeof(bundlePath))
     if (type === 'nav') (pathArray = [...relativeDirectoryArray])
     if (type === 'library') (pathArray = [...componentDirectory])
-    if (type === 'bundle') (pathArray = [...bundlePath])
+    if (type === 'bundle') (pathArray = [...options.chosenBundlePath])
 
     function updateStyleAction(answers, pathArray) { // Issue with scope of pathArray
         pathArray.push(clearANSI(answers.contents))
@@ -164,19 +165,21 @@ export function navHandler(type, commands, options = null) {
         })
     }
 
-    const bundleStat = (pathArray, answers, passedOptions) => {
+    const bundleStat = (pathArray, answers, commandArray, passedOptions) => {
         console.log('TRACE: bundleStat')
         stat(`${pathArray.join('/')}/${clearANSI(answers.contents)}`, (err, stats) => {
             if (err) {
                 console.error('Error getting file/folder information:', err)
             } else {
-                pathArray.push(clearANSI(answers.contents))
+                // pathArray.push(clearANSI(answers.contents))
                 const options = {
                     ...passedOptions,
                     bundleSrcFolder: pathArray,
+                    bundleSelection: answers.contents,
+                    bundleIsSelected: true
                 }
                 // TODO: it would be better to pass the build language and type directly instead of manipulating the path
-                nav(newBuildPlacement, options)
+                navHandler('nav', newBuildPlacement, options)
             }
         })
     }

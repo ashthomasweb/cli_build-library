@@ -42,7 +42,7 @@ export function newBuildActions() { // TODO: needs language specific handling
                         chosenBundlePath: [...bundlesDirectory, language.toLowerCase(), answers.reactBuilds.toLowerCase()],
                         bundleSelection: answers.selection
                     }
-                    navHandler('bundle', newBuildPlacement, options) // Skipped a step here...
+                    navHandler('bundle', newBuildCommands, options) // Skipped a step here...
                 }
             })
         } else if (answers.language === 'Vue') {
@@ -55,7 +55,7 @@ export function newBuildActions() { // TODO: needs language specific handling
                     const options = {
                         chosenBundlePath: [...bundlesDirectory, language.toLowerCase(), answers.vueBuilds.toLowerCase()]
                     }
-                    navHandler('bundle', newBuildPlacement, options)
+                    navHandler('bundle', newBuildCommands, options)
                 }
             })
         } else if (answers.language === 'Start Over') {
