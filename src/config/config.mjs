@@ -20,7 +20,8 @@ export const navCommandObject = {
     place: 'Place Here',
     setSRC: 'Set project folder (folder containing your /src directory)',
     setStyleFolder: 'Set project style folder',
-    setMainStylesheet: 'Set project style sheet',
+    setMainStylesheet: 'Set project main style sheet',
+    mainStyleHere: 'Main style sheet (styles.scss) is in this folder',
     newFile: 'New File In Current Directory',
     newFolder: 'Create New Folder In Current Directory',
     startBuild: 'Create /src Directory Here'
@@ -31,7 +32,7 @@ const cmd = navCommandObject
 export const standardNavCommands = [cmd.up, cmd.cancel]
 export const defaultCommands = [...standardNavCommands, cmd.place]
 export const setSourceCommands = [...standardNavCommands, cmd.setSRC]
-export const setMainStylesheetCommands = [...standardNavCommands, cmd.setMainStylesheet]
+export const setMainStylesheetCommands = [...standardNavCommands, cmd.mainStyleHere]
 export const setStyleFolderCommands = [...standardNavCommands, cmd.setStyleFolder]
 export const newFileFolderCommands = [...standardNavCommands, cmd.newFile, cmd.newFolder]
 export const fromLibraryCommands = [...standardNavCommands]

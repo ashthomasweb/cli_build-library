@@ -75,7 +75,7 @@ export const settingsPrompt = [{
     type: 'list',
     name: 'settings',
     message: 'Select setting to set:',
-    choices: [cmd.setSRC, cmd.setMainStylesheet, cmd.setStyleFolder] // 'Reset /src folder', 'Set style sheet options'
+    choices: [cmd.setSRC, cmd.setMainStylesheet, cmd.setStyleFolder]
 }]
 
 export function generateDynamicPrompt(commandArray = defaultCommands, path) {

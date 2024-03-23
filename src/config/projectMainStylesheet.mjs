@@ -1,1 +1,1 @@
-export const projectMainStylesheet = [] // should be user set project path to main stylesheet
+export const projectMainStylesheet = ['C:', 'Users', 'rideo', 'Dropbox', 'Code', 'projects', '__active', 'project_cli', '_src-folder', 'cli', 'hal', '_testDirs', 'aNewTestFolder', 'scss', 'styles.scss']

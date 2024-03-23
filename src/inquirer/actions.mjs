@@ -27,12 +27,6 @@ export function settingsActions() {
         } else if (answerMatch(answers.settings, cmd.setStyleFolder)) {
             navHandler('nav', setStyleFolderCommands)
         }
-        // ATTN: Is the below 'reset' opiton  needed? User always needs to have a project folder set
-        // There should be a check for if any actions destination and the associated project paths,
-        // (project root, style folder, and stylesheet) don't match
-        // else if (answers.settings === 'Reset /src folder') { 
-        //     console.log('Feature Coming Soon!')
-        // }
     })
 }
 
@@ -116,37 +110,34 @@ export function newFolderAction(path) {
 export function setSourceAction(pathArray) {
     const pathToVariable = [...halRootDirectory, 'src', 'config', 'projectDirectory.mjs']
     const varPrefix = 'export const projectDirectory = '
-    let arrayAsString = `[`
-    pathArray.forEach(entry => {
-        arrayAsString = arrayAsString +`'${entry}', `
-    })
-    arrayAsString = arrayAsString.substring(0, arrayAsString.length - 2) + `]`
-    const newContent = `${varPrefix}${arrayAsString}`
-    fsWriteFile(pathToVariable.join('/'), newContent)
+    buildArrayExport(pathArray, pathToVariable, varPrefix)
 }
 
 
 export function setProjectStyleFolder(pathArray) {
     const pathToVariable = [...halRootDirectory, 'src', 'config', 'projectStylesFolder.mjs']
     const varPrefix = 'export const projectStylesFolder = '
-    let arrayAsString = `[`
-    pathArray.forEach(entry => {
-        arrayAsString = arrayAsString +`'${entry}', `
-    })
-    arrayAsString = arrayAsString.substring(0, arrayAsString.length - 2) + `]`
-    const newContent = `${varPrefix}${arrayAsString}`
-    fsWriteFile(pathToVariable.join('/'), newContent)
+    buildArrayExport(pathArray, pathToVariable, varPrefix)
 }
 
 
 export function setMainStylesheet(pathArray) {
     const pathToVariable = [...halRootDirectory, 'src', 'config', 'projectMainStylesheet.mjs']
     const varPrefix = 'export const projectMainStylesheet = '
+    const isStylesheet = true
+    buildArrayExport(pathArray, pathToVariable, varPrefix, isStylesheet)
+}
+
+function buildArrayExport(pathArray, pathToVariable, varPrefix, isStylesheet = false) {
     let arrayAsString = `[`
     pathArray.forEach(entry => {
         arrayAsString = arrayAsString +`'${entry}', `
     })
-    arrayAsString = arrayAsString.substring(0, arrayAsString.length - 2) + `]`
+    if (isStylesheet) {
+        arrayAsString = arrayAsString + `'styles.scss']`
+    } else {
+        arrayAsString = arrayAsString.substring(0, arrayAsString.length - 2) + `]`
+    }
     const newContent = `${varPrefix}${arrayAsString}`
     fsWriteFile(pathToVariable.join('/'), newContent)
 }

@@ -41,7 +41,7 @@ import {
 
 import { clearANSI } from '../styles/styles.mjs'
 
-/* Variables used to store temporary values */
+/* Variables used to store temporary values */ // TODO: Should be wrapped into an object
 var tempComponentFilename = null
 var tempComponentContent = null
 var tempStylesheetContent = null
@@ -62,13 +62,12 @@ function garbageCollectTempVars() {
     hasStylesheet = false
 }
 
-
 export function navHandler(type, commands, options = null) {
     let pathArray
     let directoryHandler
-    if (type === 'nav') (pathArray = [...projectDirectory]) // should be the user set project directory
-    if (type === 'library') (pathArray = [...componentDirectory])
-    if (type === 'bundle') (pathArray = [...options.chosenBundlePath])
+    type === 'nav' && (pathArray = [...projectDirectory])
+    type === 'library' && (pathArray = [...componentDirectory])
+    type === 'bundle' && (pathArray = [...options.chosenBundlePath])
 
     if (options?.bundleIsSelected && projectDirectory !== '') (pathArray = [...projectDirectory])
     if (options?.navFromCurrentLocation) (pathArray = options?.currentPath)
@@ -128,6 +127,7 @@ export function navHandler(type, commands, options = null) {
     }
 
     const navStat = (pathArray, answers, commandArray, options = null) => {
+        console.log('TRACE: navStat')
         stat(`${pathArray.join('/')}/${clearANSI(answers.contents)}`, (err, stats) => {
             if (err) {
                 console.error('Error getting file/folder information:', err)
@@ -176,7 +176,8 @@ export function navHandler(type, commands, options = null) {
                     bundleSelection: answers.contents,
                     bundleIsSelected: true
                 }
-                // TODO: it would be better to pass the build language and type directly
+                // TODO: would it would be better to pass the build language and type directly?
+                // perhaps not anymore - pathArray is no longer being manipulated ... need investigation
                 navHandler('nav', newBuildPlacement, options)
             }
         })
@@ -205,7 +206,7 @@ export function navHandler(type, commands, options = null) {
                 setSourceAction(pathArray)
             } else if (answerMatch(answers.contents, cmd.setStyleFolder)) {
                 setProjectStyleFolder(pathArray)
-            } else if (answerMatch(answers.contents, cmd.setMainStylesheet)) {
+            } else if (answerMatch(answers.contents, cmd.mainStyleHere)) {
                 setMainStylesheet(pathArray)
             } else {
                 directoryHandler(pathArray, answers, commandArray, options)
@@ -213,7 +214,6 @@ export function navHandler(type, commands, options = null) {
         })
     }
     nav(commands, options)
-
 }
 
 function placeComponentAction(pathArray) {

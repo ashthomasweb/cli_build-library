@@ -1,4 +1,6 @@
 #! /usr/bin/env node
+
+/* Configuration imports */
 import { 
     defaultCommands, 
     mainMenuChoices as choices, 
@@ -6,6 +8,7 @@ import {
     standardNavCommands 
 } from './config/config.mjs'
 
+/* Library and Helper imports */
 import inquirer from 'inquirer'
 import * as p from './inquirer/prompts.js'
 import { 
@@ -14,10 +17,11 @@ import {
 } from './inquirer/actions.mjs'
 
 import { navHandler } from './navigation/nav.mjs'
+import { answerMatch } from './services/utilities.mjs'
 
 inquirer.prompt(p.mainMenuPrompt).then(answers => {
 
-    if (answers.main_menu === choices.createNew) {
+    if (answerMatch(answers.main_menu, choices.createNew)) {
         navHandler('nav', newFileFolderCommands)
     } else if (answers.main_menu === choices.build) {
         newBuildActions()
