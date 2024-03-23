@@ -5,20 +5,20 @@ import {
     newFileFolderCommands, 
     standardNavCommands 
 } from './config/config.mjs'
+
 import inquirer from 'inquirer'
 import * as p from './inquirer/prompts.js'
 import { 
     settingsActions,
     newBuildActions 
 } from './inquirer/actions.mjs'
+
 import { navHandler } from './navigation/nav.mjs'
 
 inquirer.prompt(p.mainMenuPrompt).then(answers => {
 
     if (answers.main_menu === choices.createNew) {
-        // nav(newFileFolderCommands)
         navHandler('nav', newFileFolderCommands)
-
     } else if (answers.main_menu === choices.build) {
         newBuildActions()
     } else if (answers.main_menu === choices.copyFrom) {

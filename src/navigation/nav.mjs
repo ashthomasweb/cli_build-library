@@ -1,31 +1,32 @@
 /* Configuration imports */
 import {
     defaultCommands,
-    fromLibraryCommands,
     directoriesContainingStyleSheets,
     placeComponentCommands,
     navCommandObject as cmd,
     newBuildPlacement
 } from "../config/config.mjs"
 
+import { projectDirectory } from "../config/projectDirectory.mjs"
+
 import {
     libraryStyleDirectory,
     componentDirectory,
-    projectComponentStylesFolder,
-    projectMainStylesheet,
 } from "../config/pathVariables.mjs"
 
-import { relativeDirectoryArray } from "../config/relativeDirectory.mjs"
+import { projectStylesFolder } from "../config/projectStylesFolder.mjs"
+import { projectMainStylesheet } from "../config/projectMainStylesheet.mjs"
 
 /* Library and Helper imports */
 import inquirer from "inquirer"
-import * as p from '../inquirer/prompts.js'
 import {
     setSourceAction,
+    setProjectStyleFolder,
+    setMainStylesheet,
     newFileAction,
     newFolderAction,
-    newBuildActions
 } from "../inquirer/actions.mjs"
+import * as p from '../inquirer/prompts.js'
 
 import { stat, readFileSync, promises } from 'fs'
 
@@ -39,9 +40,8 @@ import {
 } from "../services/utilities.mjs"
 
 import { clearANSI } from '../styles/styles.mjs'
-import { userRootDirectory } from "../config/userSetRootPath.mjs"
 
-/* Local variable used to store temporary values */
+/* Variables used to store temporary values */
 var tempComponentFilename = null
 var tempComponentContent = null
 var tempStylesheetContent = null
@@ -64,19 +64,16 @@ function garbageCollectTempVars() {
 
 
 export function navHandler(type, commands, options = null) {
-    console.log(options)
     let pathArray
     let directoryHandler
-    // let bundlePath = [...bundlesDirectory]
-    // console.log(bundlePath)
-    // console.log(typeof(bundlePath))
-    if (type === 'nav') (pathArray = [...relativeDirectoryArray])
+    if (type === 'nav') (pathArray = [...projectDirectory]) // should be the user set project directory
     if (type === 'library') (pathArray = [...componentDirectory])
     if (type === 'bundle') (pathArray = [...options.chosenBundlePath])
 
-    if (options?.bundleIsSelected && userRootDirectory !== '') (pathArray = [...userRootDirectory])
+    if (options?.bundleIsSelected && projectDirectory !== '') (pathArray = [...projectDirectory])
+    if (options?.navFromCurrentLocation) (pathArray = options?.currentPath)
 
-    function updateStyleAction(answers, pathArray) { // Issue with scope of pathArray
+    function updateStyleAction(answers, pathArray) {
         pathArray.push(clearANSI(answers.contents))
         pathArray.join('/').match(noExportRegExp) === null && (hasExport = true)
 
@@ -152,9 +149,9 @@ export function navHandler(type, commands, options = null) {
             if (err) {
                 console.error('Error getting file/folder information:', err)
             } else {
-                if (stats.isFile()) { // HANDLES FILE SELECTION
+                if (stats.isFile()) {
                     updateStyleAction(answers, pathArray)
-                } else if (stats.isDirectory()) { // HANDLES DIRECTORY SELECTION
+                } else if (stats.isDirectory()) {
                     if (directoriesContainingStyleSheets.includes(clearANSI(answers.contents))) {
                         tempStyledComponentType = clearANSI(answers.contents)
                     }
@@ -173,14 +170,13 @@ export function navHandler(type, commands, options = null) {
             if (err) {
                 console.error('Error getting file/folder information:', err)
             } else {
-                // pathArray.push(clearANSI(answers.contents))
                 const options = {
                     ...passedOptions,
                     bundleSrcFolder: pathArray,
                     bundleSelection: answers.contents,
                     bundleIsSelected: true
                 }
-                // TODO: it would be better to pass the build language and type directly instead of manipulating the path
+                // TODO: it would be better to pass the build language and type directly
                 navHandler('nav', newBuildPlacement, options)
             }
         })
@@ -207,6 +203,10 @@ export function navHandler(type, commands, options = null) {
                 writeNewBundle(pathArray, options)
             } else if (answerMatch(answers.contents, cmd.setSRC)) {
                 setSourceAction(pathArray)
+            } else if (answerMatch(answers.contents, cmd.setStyleFolder)) {
+                setProjectStyleFolder(pathArray)
+            } else if (answerMatch(answers.contents, cmd.setMainStylesheet)) {
+                setMainStylesheet(pathArray)
             } else {
                 directoryHandler(pathArray, answers, commandArray, options)
             }
@@ -220,7 +220,7 @@ function placeComponentAction(pathArray) {
     try {
         fsWriteFile(`${pathArray.join('/')}/${tempComponentFilename}`, tempComponentContent) // Write new component
         if (tempStylesheetContent !== null) {
-            fsWriteFile(`${projectComponentStylesFolder.join('/')}/${tempStyledComponentType}/${tempComponentFilename.split('.')[0]}.scss`, tempStylesheetContent) // Write new scss file
+            fsWriteFile(`${projectStylesFolder.join('/')}/${tempStyledComponentType}/${tempComponentFilename.split('.')[0]}.scss`, tempStylesheetContent) // Write new scss file
             fsWriteFile(`${projectMainStylesheet.join('/')}`, tempPrimaryStylesheetContent) // Write updated primary stylesheet
         }
     } catch (error) {

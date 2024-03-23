@@ -22,7 +22,7 @@ export const mainMenuPrompt = [{
         mmc.explore,
         mmc.createNew,
         mmc.help, // ATTN: Planned feature - Help doc
-        mmc.settings // ATTN: Planned feature - User Settings
+        mmc.settings
     ]
 }]
 
@@ -71,18 +71,11 @@ export const newBundlePrompt = [{
     message: 'What would you like your root directory to be called?',
 }]
 
-
-// export const srcFolderPrompt = [{ // UNUSED - retire?
-//     type: 'input',
-//     name: 'src_folder',
-//     message: 'Type path of your /src folder',
-// }]
-
 export const settingsPrompt = [{
     type: 'list',
     name: 'settings',
     message: 'Select setting to set:',
-    choices: ['Set project (parent of /src) folder'] // 'Reset /src folder', 'Set style sheet options'
+    choices: [cmd.setSRC, cmd.setMainStylesheet, cmd.setStyleFolder] // 'Reset /src folder', 'Set style sheet options'
 }]
 
 export function generateDynamicPrompt(commandArray = defaultCommands, path) {

@@ -10,7 +10,7 @@ export const mainMenuChoices = {
     explore: `${styled('Explore', 'yellow')} Starting From /src/`,
     createNew: `${styled('Create', 'yellow')} New Blank File or Folder`,
     help: `Display Help Docs - Coming Soon!`,
-    settings: `User Settings - Coming Soon!`
+    settings: `User Settings`
 }
 
 export const navCommandObject = {
@@ -18,7 +18,9 @@ export const navCommandObject = {
     cancel: 'Cancel',
     reset: 'Start Over',
     place: 'Place Here',
-    setSRC: 'Set project (parent of /src) folder',
+    setSRC: 'Set project folder (folder containing your /src directory)',
+    setStyleFolder: 'Set project style folder',
+    setMainStylesheet: 'Set project style sheet',
     newFile: 'New File In Current Directory',
     newFolder: 'Create New Folder In Current Directory',
     startBuild: 'Create /src Directory Here'
@@ -28,9 +30,11 @@ const cmd = navCommandObject
 
 export const standardNavCommands = [cmd.up, cmd.cancel]
 export const defaultCommands = [...standardNavCommands, cmd.place]
-export const settingsCommands = [...standardNavCommands, cmd.setSRC]
+export const setSourceCommands = [...standardNavCommands, cmd.setSRC]
+export const setMainStylesheetCommands = [...standardNavCommands, cmd.setMainStylesheet]
+export const setStyleFolderCommands = [...standardNavCommands, cmd.setStyleFolder]
 export const newFileFolderCommands = [...standardNavCommands, cmd.newFile, cmd.newFolder]
-export const fromLibraryCommands = [cmd.up, cmd.cancel]
+export const fromLibraryCommands = [...standardNavCommands]
 export const placeComponentCommands = [...standardNavCommands, cmd.newFolder, cmd.place,]
 export const newBuildPlacement = [...standardNavCommands, cmd.startBuild]
 export const newBuildCommands = [cmd.reset, cmd.cancel]

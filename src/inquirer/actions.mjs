@@ -1,11 +1,11 @@
 /* Configuration imports */
-
 import {
-    settingsCommands,
     newBuildCommands,
-    newBuildPlacement,
     newFileFolderCommands,
     navCommandObject as cmd,
+    setMainStylesheetCommands,
+    setStyleFolderCommands,
+    setSourceCommands,
 } from "../config/config.mjs"
 
 /* Library and Helper imports */
@@ -13,17 +13,26 @@ import inquirer from "inquirer"
 import * as p from './prompts.js'
 import { writeFile, mkdir } from "fs"
 import { navHandler } from "../navigation/nav.mjs"
-import { bundlesDirectory, halRootDirectory } from "../config/pathVariables.mjs"
+import { bundlesDirectory } from "../config/pathVariables.mjs"
+import { halRootDirectory } from "../config/halRootDirectory.mjs"
 import { styled } from "../styles/styles.mjs"
-import { fsWriteFile } from "../services/utilities.mjs"
+import { answerMatch, fsWriteFile } from "../services/utilities.mjs"
 
 export function settingsActions() {
     inquirer.prompt(p.settingsPrompt).then(answers => {
-        if (answers.settings === 'Set /src folder') {
-            navHandler('nav', settingsCommands)
-        } else if (answers.settings === 'Reset /src folder') {
-            console.log('Feature Coming Soon!')
+        if (answerMatch(answers.settings, cmd.setSRC)) {
+            navHandler('nav', setSourceCommands)
+        } else if (answerMatch(answers.settings, cmd.setMainStylesheet)) {
+            navHandler('nav', setMainStylesheetCommands)
+        } else if (answerMatch(answers.settings, cmd.setStyleFolder)) {
+            navHandler('nav', setStyleFolderCommands)
         }
+        // ATTN: Is the below 'reset' opiton  needed? User always needs to have a project folder set
+        // There should be a check for if any actions destination and the associated project paths,
+        // (project root, style folder, and stylesheet) don't match
+        // else if (answers.settings === 'Reset /src folder') { 
+        //     console.log('Feature Coming Soon!')
+        // }
     })
 }
 
@@ -42,7 +51,7 @@ export function newBuildActions() { // TODO: needs language specific handling
                         chosenBundlePath: [...bundlesDirectory, language.toLowerCase(), answers.reactBuilds.toLowerCase()],
                         bundleSelection: answers.selection
                     }
-                    navHandler('bundle', newBuildCommands, options) // Skipped a step here...
+                    navHandler('bundle', newBuildCommands, options)
                 }
             })
         } else if (answers.language === 'Vue') {
@@ -53,7 +62,8 @@ export function newBuildActions() { // TODO: needs language specific handling
                     console.log('Goodbye')
                 } else {
                     const options = {
-                        chosenBundlePath: [...bundlesDirectory, language.toLowerCase(), answers.vueBuilds.toLowerCase()]
+                        chosenBundlePath: [...bundlesDirectory, language.toLowerCase(), answers.vueBuilds.toLowerCase()],
+                        bundleSelection: answers.selection
                     }
                     navHandler('bundle', newBuildCommands, options)
                 }
@@ -74,8 +84,12 @@ export function newFileAction(path) {
             if (err) {
                 console.error('Error writing to file:', err)
             } else {
-                console.log('File content changed successfully.')
-                nav(newFileFolderCommands)
+                console.log('File created successfully.')
+                const options = {
+                    navFromCurrentLocation: true,
+                    currentPath: path
+                }
+                navHandler('nav', newFileFolderCommands, options)
             }
         })
     })
@@ -89,20 +103,50 @@ export function newFolderAction(path) {
                 console.error('Error creating directory:', err)
             } else {
                 console.log('Directory created successfully!')
-                nav(newFileFolderCommands)
+                const options = {
+                    navFromCurrentLocation: true,
+                    currentPath: path
+                }
+                navHandler('nav', newFileFolderCommands, options)
             }
         })
     })
 }
 
 export function setSourceAction(pathArray) {
-    const userRootPath = [...halRootDirectory, 'src', 'config', 'userSetRootPath.mjs']
-    const varPrefix = 'export const userRootDirectory = '
+    const pathToVariable = [...halRootDirectory, 'src', 'config', 'projectDirectory.mjs']
+    const varPrefix = 'export const projectDirectory = '
     let arrayAsString = `[`
     pathArray.forEach(entry => {
         arrayAsString = arrayAsString +`'${entry}', `
     })
-    arrayAsString = arrayAsString + `]`
+    arrayAsString = arrayAsString.substring(0, arrayAsString.length - 2) + `]`
     const newContent = `${varPrefix}${arrayAsString}`
-    fsWriteFile(userRootPath.join('/'), newContent)
+    fsWriteFile(pathToVariable.join('/'), newContent)
+}
+
+
+export function setProjectStyleFolder(pathArray) {
+    const pathToVariable = [...halRootDirectory, 'src', 'config', 'projectStylesFolder.mjs']
+    const varPrefix = 'export const projectStylesFolder = '
+    let arrayAsString = `[`
+    pathArray.forEach(entry => {
+        arrayAsString = arrayAsString +`'${entry}', `
+    })
+    arrayAsString = arrayAsString.substring(0, arrayAsString.length - 2) + `]`
+    const newContent = `${varPrefix}${arrayAsString}`
+    fsWriteFile(pathToVariable.join('/'), newContent)
+}
+
+
+export function setMainStylesheet(pathArray) {
+    const pathToVariable = [...halRootDirectory, 'src', 'config', 'projectMainStylesheet.mjs']
+    const varPrefix = 'export const projectMainStylesheet = '
+    let arrayAsString = `[`
+    pathArray.forEach(entry => {
+        arrayAsString = arrayAsString +`'${entry}', `
+    })
+    arrayAsString = arrayAsString.substring(0, arrayAsString.length - 2) + `]`
+    const newContent = `${varPrefix}${arrayAsString}`
+    fsWriteFile(pathToVariable.join('/'), newContent)
 }

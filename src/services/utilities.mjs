@@ -10,7 +10,6 @@ import inquirer from 'inquirer'
 import * as p from '../inquirer/prompts.js'
 import { promises, stat, writeFile, cp } from 'fs'
 import { clearANSI, styled } from '../styles/styles.mjs'
-import { trace } from 'console'
 
 const statPromise = util.promisify(stat)
 
@@ -59,7 +58,7 @@ export function fsWriteFile(path, newContent) {
         if (err) {
             console.error(`Error writing to file: ${path}`, err)
         } else {
-            console.log(`${styled(styled(`File content changed successfully!`, 'green'), 'italics')}\n${path}`)
+            console.log(`${styled(styled(`File content changed successfully!`, 'green'), 'italics')}`)
         }
     })
 }
