@@ -30,7 +30,7 @@ export function settingsActions() {
     })
 }
 
-export function newBuildActions() { // TODO: needs language specific handling
+export function newBuildActions() { // TODO: needs better language specific handling
     let language
     inquirer.prompt(p.newBuildPrompt).then(answers => {
         language = answers.language
@@ -113,13 +113,11 @@ export function setSourceAction(pathArray) {
     buildArrayExport(pathArray, pathToVariable, varPrefix)
 }
 
-
 export function setProjectStyleFolder(pathArray) {
     const pathToVariable = [...halRootDirectory, 'src', 'config', 'projectStylesFolder.mjs']
     const varPrefix = 'export const projectStylesFolder = '
     buildArrayExport(pathArray, pathToVariable, varPrefix)
 }
-
 
 export function setMainStylesheet(pathArray) {
     const pathToVariable = [...halRootDirectory, 'src', 'config', 'projectMainStylesheet.mjs']

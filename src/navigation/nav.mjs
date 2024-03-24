@@ -40,6 +40,7 @@ import {
 } from "../services/utilities.mjs"
 
 import { clearANSI } from '../styles/styles.mjs'
+import { trace } from "console"
 
 /* Variables used to store temporary values */ // TODO: Should be wrapped into an object
 var tempComponentFilename = null
@@ -127,13 +128,12 @@ export function navHandler(type, commands, options = null) {
     }
 
     const navStat = (pathArray, answers, commandArray, options = null) => {
-        console.log('TRACE: navStat')
         stat(`${pathArray.join('/')}/${clearANSI(answers.contents)}`, (err, stats) => {
             if (err) {
                 console.error('Error getting file/folder information:', err)
             } else {
                 if (stats.isFile()) {
-                    console.log('No action available') // THIS IS A USELESS ENDPOINT FOR THE USER
+                    console.log('No action available') // THIS IS A USELESS ENDPOINT FOR THE USER - shouldn't ever be hit - RETIRE?
                 } else if (stats.isDirectory()) {
                     pathArray.push(clearANSI(answers.contents))
                     nav(commandArray, options)
@@ -165,7 +165,6 @@ export function navHandler(type, commands, options = null) {
     }
 
     const bundleStat = (pathArray, answers, commandArray, passedOptions) => {
-        console.log('TRACE: bundleStat')
         stat(`${pathArray.join('/')}/${clearANSI(answers.contents)}`, (err, stats) => {
             if (err) {
                 console.error('Error getting file/folder information:', err)

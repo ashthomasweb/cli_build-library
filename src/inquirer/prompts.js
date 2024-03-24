@@ -8,9 +8,9 @@ import {
 import { styled } from '../styles/styles.mjs'
 
 /* Library and Helper imports */
+import inquirer from 'inquirer'
 import { gatherDynamicFolderContents } from '../services/utilities.mjs'
 
-import inquirer from 'inquirer'
 
 export const mainMenuPrompt = [{
     type: 'list',
@@ -83,7 +83,7 @@ export function generateDynamicPrompt(commandArray = defaultCommands, path) {
         type: 'list',
         name: 'contents',
         message: 'Navigation',
-        choices: () => gatherDynamicFolderContents(path.join('/'), commandArray),
+        choices: () => gatherDynamicFolderContents(path, commandArray),
         pageSize: 25,
         default: commandArray.length
     }]

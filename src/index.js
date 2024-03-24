@@ -8,7 +8,6 @@ import {
     standardNavCommands 
 } from './config/config.mjs'
 
-/* Library and Helper imports */
 import inquirer from 'inquirer'
 import * as p from './inquirer/prompts.js'
 import { 
@@ -17,11 +16,10 @@ import {
 } from './inquirer/actions.mjs'
 
 import { navHandler } from './navigation/nav.mjs'
-import { answerMatch } from './services/utilities.mjs'
 
 inquirer.prompt(p.mainMenuPrompt).then(answers => {
 
-    if (answerMatch(answers.main_menu, choices.createNew)) {
+    if (answers.main_menu === choices.createNew) { // TODO: implement answerMatch() - should work here but doesn't...
         navHandler('nav', newFileFolderCommands)
     } else if (answers.main_menu === choices.build) {
         newBuildActions()

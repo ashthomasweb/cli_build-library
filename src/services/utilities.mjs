@@ -26,17 +26,31 @@ export const styledComponentRegex = new RegExp(`(^|[/\\\\])(${directoriesContain
 export const noExportRegExp = new RegExp(`(^|[/\\\\])(${directoriesWithNoExport.join('|')})([/\\\\]|$)`)
 
 export async function gatherDynamicFolderContents(inputDirectory, commandOptions) {
+    if (inputDirectory.length === 1) {
+        inputDirectory = inputDirectory.join('/') + '/'
+    } else {
+        inputDirectory = inputDirectory.join('/')
+    }
     try {
         const styledCommands = commandOptions.map(entry => (
             styled(styled(entry, 'italics'), 'yellow')
         ))
 
         const files = await promises.readdir(inputDirectory)
-        const taggedFiles = await Promise.all(
+        let taggedFiles = []
+        await Promise.all(
             files.map(async (entry) => {
-                const stats = await statPromise(`${inputDirectory}/${entry}`)
-                const isDirectory = stats.isDirectory()
-                return colorizeString(entry, isDirectory)
+                let allowed = true
+                let stats
+                let isDirectory
+                try {
+                    stats = await statPromise(`${inputDirectory}/${entry}`)
+                    isDirectory = stats.isDirectory()
+                } catch (error) {
+                    allowed = false
+                } finally {
+                    allowed && entry.charAt(0) !== '.' && taggedFiles.push(colorizeString(entry, isDirectory))
+                }
             })
         )
 
