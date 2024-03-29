@@ -8,6 +8,9 @@ import {
     standardNavCommands 
 } from './config/config.mjs'
 
+import { projectDirectory } from './config/projectDirectory.mjs'
+
+/* Library and Helper imports */
 import inquirer from 'inquirer'
 import * as p from './inquirer/prompts.js'
 import { 
@@ -16,6 +19,8 @@ import {
 } from './inquirer/actions.mjs'
 
 import { navHandler } from './navigation/nav.mjs'
+
+import { styled } from './styles/styles.mjs'
 
 inquirer.prompt(p.mainMenuPrompt).then(answers => {
 
@@ -28,6 +33,7 @@ inquirer.prompt(p.mainMenuPrompt).then(answers => {
     } else if (answers.main_menu === choices.settings) {
         settingsActions()
     } else if (answers.main_menu === choices.explore) {
+        projectDirectory.length === 1 && console.log(`\n${styled(styled('** ATTENTION - your project directory is unset! **', 'yellow'), 'bold')}\n${styled('For your convienience, set a directory under "User Settings".', 'bold')}\n`)
         navHandler('nav', standardNavCommands)
     } else if (answers.main_menu === choices.help) {
         console.log('Help docs coming soon!')

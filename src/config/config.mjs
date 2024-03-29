@@ -7,7 +7,7 @@ export const directoriesWithNoExport = ['servers', 'build']
 export const mainMenuChoices = {
     copyFrom: `${styled('Copy', 'yellow')} From Reuseable Component Library`,
     build: `${styled('Start', 'yellow')} New Project Build`,
-    explore: `${styled('Explore', 'yellow')} Starting From /src/`,
+    explore: `${styled('Explore', 'yellow')} Starting From Your Project Folder`,
     createNew: `${styled('Create', 'yellow')} New Blank File or Folder`,
     help: `Display Help Docs - Coming Soon!`,
     settings: `User Settings`

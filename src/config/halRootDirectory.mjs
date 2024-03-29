@@ -1,1 +1,1 @@
-export const halRootDirectory = ['C:']
+export const halRootDirectory = ['C:', 'Users', 'rideo', 'Dropbox', 'Code', 'projects', '__active', 'project_cli', '_src-folder', 'cli', 'hal']

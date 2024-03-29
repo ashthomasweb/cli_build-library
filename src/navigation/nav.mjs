@@ -41,6 +41,7 @@ import {
 
 import { clearANSI } from '../styles/styles.mjs'
 import { trace } from "console"
+import { halRootDirectory } from "../config/halRootDirectory.mjs"
 
 /* Variables used to store temporary values */ // TODO: Should be wrapped into an object
 var tempComponentFilename = null
@@ -69,7 +70,6 @@ export function navHandler(type, commands, options = null) {
     type === 'nav' && (pathArray = [...projectDirectory])
     type === 'library' && (pathArray = [...componentDirectory])
     type === 'bundle' && (pathArray = [...options.chosenBundlePath])
-
     if (options?.bundleIsSelected && projectDirectory !== '') (pathArray = [...projectDirectory])
     if (options?.navFromCurrentLocation) (pathArray = options?.currentPath)
 
