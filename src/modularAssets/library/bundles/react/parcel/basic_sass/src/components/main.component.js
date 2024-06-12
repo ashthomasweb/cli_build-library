@@ -6,7 +6,9 @@ import {
 export default function Main() {
     return (
         <div>
-            Hello Parcel
+            <h1>
+                Hello Parcel!
+            </h1>
         </div>
     )
 }

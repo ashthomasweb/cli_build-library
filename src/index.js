@@ -21,6 +21,8 @@ import {
 import { navHandler } from './navigation/nav.mjs'
 
 import { styled } from './styles/styles.mjs'
+import { projectMainStylesheet } from './config/projectMainStylesheet.mjs'
+import { projectStylesFolder } from './config/projectStylesFolder.mjs'
 
 inquirer.prompt(p.mainMenuPrompt).then(answers => {
 
@@ -29,7 +31,9 @@ inquirer.prompt(p.mainMenuPrompt).then(answers => {
     } else if (answers.main_menu === choices.build) {
         newBuildActions()
     } else if (answers.main_menu === choices.copyFrom) {
-        navHandler('library', defaultCommands)
+        projectMainStylesheet.length === 1 && console.log(`\n${styled(styled('** ATTENTION - your project stylesheet directory is unset! **', 'yellow'), 'bold')}\n${styled('For your convienience, set a file under "User Settings".', 'bold')}\n`)
+        projectStylesFolder.length === 1 && console.log(`\n${styled(styled('** ATTENTION - your project style folder is unset! **', 'yellow'), 'bold')}\n${styled('For your convienience, set a directory under "User Settings".', 'bold')}\n`)
+        if (projectMainStylesheet.length !== 1 & projectStylesFolder.length !== 1) navHandler('library', defaultCommands)
     } else if (answers.main_menu === choices.settings) {
         settingsActions()
     } else if (answers.main_menu === choices.explore) {

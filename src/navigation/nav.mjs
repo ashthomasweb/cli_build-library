@@ -72,31 +72,41 @@ export function navHandler(type, commands, options = null) {
     type === 'bundle' && (pathArray = [...options.chosenBundlePath])
     if (options?.bundleIsSelected && projectDirectory !== '') (pathArray = [...projectDirectory])
     if (options?.navFromCurrentLocation) (pathArray = options?.currentPath)
+    if (options?.resetPath) (pathArray = [...projectDirectory])
 
     function updateStyleAction(answers, pathArray) {
+        console.log('TRACE: updateStyleAction')
         pathArray.push(clearANSI(answers.contents))
         pathArray.join('/').match(noExportRegExp) === null && (hasExport = true)
 
         if (pathArray.join('/').match(styledComponentRegex)) { /* --------------- HAS STYLESHEET COMPONENTS ---------------- */
+            console.log('has styleS')
             hasStylesheet = true
 
             async function getStyleSheets() {
+                console.log('getStyleSheets')
                 const styleFiles = await promises.readdir(libraryStyleDirectory.join('/'))
                 return styleFiles
             }
             getStyleSheets().then(result => {
+                console.log('then')
                 const relativeStyleSheetFilename = result.filter(entry => entry.includes(clearANSI(answers.contents.split('.')[0])))[0]
                 tempStylesheetContent = readFileSync(`${libraryStyleDirectory.join('/')}/${relativeStyleSheetFilename}`, 'utf8')
+                console.log('tempStyle', tempStylesheetContent, projectMainStylesheet)
                 const primaryStyleSheetInitContent = readFileSync(`${projectMainStylesheet.join('/')}`).toString()
+                console.log('test')
                 handleNamingUpdatingAndNav(pathArray, primaryStyleSheetInitContent)
             })
 
         } else { /* --------------- NO STYLESHEET COMPONENTS ---------------- */
+            console.log('has no styleS')
+
             handleNamingUpdatingAndNav(pathArray)
         }
     }
 
     function handleNamingUpdatingAndNav(pathArray, primaryStyleSheetInitContent = null) { // Issue with scope of pathArray
+        console.log('handleNamingUpdatingAndNav')
         try {
             inquirer.prompt(p.whatFilenamePrompt).then(answers => {
                 tempComponentFilename = answers.what_filename
@@ -111,14 +121,14 @@ export function navHandler(type, commands, options = null) {
                         const options = {
                             resetPath: true
                         }
-                        nav(placeComponentCommands, options)
+                        navHandler('nav', placeComponentCommands, options)
                     })
                 } else if (!hasExport) {
                     tempComponentContent = readFileSync(pathArray.join('/'), 'utf8')
                     const options = {
                         resetPath: true
                     }
-                    nav(placeComponentCommands, options)
+                    navHandler('nav', placeComponentCommands, options)
                 }
 
             })
@@ -145,13 +155,16 @@ export function navHandler(type, commands, options = null) {
     }
 
     const libraryStat = (pathArray, answers, commandArray) => {
+        console.log('TRACE: libraryStat', pathArray, answers)
         stat(`${pathArray.join('/')}/${clearANSI(answers.contents)}`, (err, stats) => {
             if (err) {
                 console.error('Error getting file/folder information:', err)
             } else {
                 if (stats.isFile()) {
+                    console.log('isFile')
                     updateStyleAction(answers, pathArray)
                 } else if (stats.isDirectory()) {
+                    console.log('isDir')
                     if (directoriesContainingStyleSheets.includes(clearANSI(answers.contents))) {
                         tempStyledComponentType = clearANSI(answers.contents)
                     }

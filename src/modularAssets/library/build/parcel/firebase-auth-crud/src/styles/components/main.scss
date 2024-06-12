@@ -1,0 +1,45 @@
+h1 {
+    color: lightblue;
+    font-weight: 900;
+}
+
+.modal-basic-style {
+    background: lightblue;
+    padding: 10px 20px;
+    margin: 20px;
+    width: fit-content;
+    border-radius: 12px;
+    text-align: center;
+}
+
+.create-container {
+    input {
+        width: 500px;
+        height: 30px;
+        font-size: 22px;
+        padding: 0 0 0 3px;
+        margin: 5px 0;
+    }
+
+    button {
+        font-size: 24px;
+        padding: 3px 10px;
+        margin: 10px 0;
+        cursor: pointer;
+    }
+
+    .output-display {
+        display: inline-block;
+        
+        label {
+            font-size: 18px;
+        }
+
+        textarea {
+            width: 500px;
+            height: 400px;
+            margin: 15px;
+            white-space: pre;
+        }
+    }
+}

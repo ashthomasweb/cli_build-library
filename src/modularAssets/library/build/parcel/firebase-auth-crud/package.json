@@ -1,0 +1,29 @@
+{
+  "name": "parcel-react-firebase-auth-crud",
+  "version": "1.0.0",
+  "description": "Template with firebase hosting, CRUD interface with firestore, and firebase auth.",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "npx parcel public/index.html --port 3000 --no-cache",
+    "build": "cross-env NODE_ENV=production parcel build ./public/index.html --public-url ./",
+    "clear-cache": "rm -rf .parcel-cache/ dist/"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@parcel/transformer-sass": "^2.12.0",
+    "events": "^3.3.0",
+    "parcel": "^2.12.0",
+    "path-browserify": "^1.0.1",
+    "process": "^0.11.10",
+    "sass": "1.77.3",
+    "stream-browserify": "^3.0.0"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.5",
+    "firebase": "^10.12.2",
+    "firebase-tools": "^13.8.3",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  }
+}
